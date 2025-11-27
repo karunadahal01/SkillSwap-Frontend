@@ -1,0 +1,6 @@
+{
+  "appId": "com.skillswap.app",
+  "appName": "SkillSwap",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}
