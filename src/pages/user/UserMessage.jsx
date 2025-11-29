@@ -120,8 +120,8 @@ export default function UserMessages() {
   };
 
   const getTickColor = (status) => {
-    if (status === "seen") return "#4caf50"; // green
-    if (status === "delivered") return theme.palette.mode === "dark" ? "#b0b0b0" : "#fff";
+    if (status === "seen") return "#04ff00ff"; // green
+    if (status === "delivered") return theme.palette.mode === "dark" ? "#ffffffff" : "#fff";
     return "transparent";
   };
 
@@ -138,7 +138,7 @@ export default function UserMessages() {
           sx={{
             p: 2,
             marginTop: 7,
-            marginLeft: 2,
+            marginLeft: 0,
             borderBottom: "1px solid",
             borderColor: theme.palette.divider,
             display: "flex",
@@ -185,8 +185,8 @@ export default function UserMessages() {
               sx={{
                 flexGrow: 1,
                 overflowY: "auto",
-                p: 2,
-                bgcolor: theme.palette.mode === "dark" ? "#111" : "#dfdfdfff",
+                p: 1,
+                bgcolor: theme.palette.mode === "dark" ? "#191818ff" : "#f4f6f8",
               }}
             >
               {users.map((u) => {
@@ -202,7 +202,7 @@ export default function UserMessages() {
                       p: 1,
                       mb: 1,
                       borderRadius: 2,
-                      bgcolor: theme.palette.mode === "dark" ? "#1a1a1a" : "#fff",
+                      bgcolor: theme.palette.mode === "dark" ? "#131313ff" : "#fff",
                       cursor: "pointer",
                     }}
                     onClick={() => openChat(u.id)}
@@ -231,8 +231,9 @@ export default function UserMessages() {
                 sx={{
                   flexGrow: 1,
                   overflowY: "auto",
-                  p: 2,
-                  bgcolor: theme.palette.mode === "dark" ? "#0d0d0d" : "#dfdfdfff",
+                  p: 1,
+                  marginBottom: 7,
+                  bgcolor: theme.palette.mode === "dark" ? "#191818ff" : "#f4f6f8",
                 }}
               >
                 {activeUser.messages.map((msg) => {
@@ -250,7 +251,7 @@ export default function UserMessages() {
                       }}
                     >
                       {!isMe && <Avatar sx={{ width: 28, height: 28 }}>{activeUser.avatar}</Avatar>}
-                      {isMe && <Box sx={{ width: 28 }} />}
+                      {isMe && <Box sx={{ width: 0 }} />}
 
                       <Box sx={{ position: "relative", maxWidth: "70%" }}>
                         <Paper
@@ -258,9 +259,9 @@ export default function UserMessages() {
                             p: 1.5,
                             bgcolor: isMe ? theme.palette.primary.main : theme.palette.background.paper,
                             color: isMe ? "#fff" : theme.palette.text.primary,
-                            borderRadius: 5,
+                            borderRadius: 4,
                             wordBreak: "break-word",
-                            pb: msg.sender === "me" ? "22px" : "12px",
+                            pb: msg.sender === "me" ? "12px" : "12px",
                           }}
                         >
                           {renderMessageContent(msg)}
@@ -274,7 +275,7 @@ export default function UserMessages() {
                               right: 6,
                               fontSize: "11px",
                               color: getTickColor(msg.status),
-                              opacity: 0.9,
+                              opacity: 1,
                             }}
                           >
                             {msg.status === "seen" ? "✓✓" : "✓"}
@@ -291,13 +292,13 @@ export default function UserMessages() {
               {/* INPUT BAR */}
               <Box
                 sx={{
-                  p: 2,
+                  p: 1,
                   borderTop: "1px solid",
                   borderColor: theme.palette.divider,
                   display: "flex",
                   alignItems: "center",
                   gap: 1,
-                  marginLeft: 1.5,
+                  marginLeft: 0,
                   bgcolor: theme.palette.background.paper,
                   position: "fixed",
                   bottom: 0,
