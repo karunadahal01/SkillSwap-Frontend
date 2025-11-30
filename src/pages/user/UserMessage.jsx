@@ -272,7 +272,7 @@ export default function UserMessages() {
                             sx={{
                               position: "absolute",
                               marginRight: 1,
-                              right: 1,
+                              right: 0,
                               fontSize: "11px",
                               color: getTickColor(msg.status),
                               opacity: 1,
