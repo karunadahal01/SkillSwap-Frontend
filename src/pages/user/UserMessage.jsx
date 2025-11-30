@@ -121,7 +121,7 @@ export default function UserMessages() {
 
   const getTickColor = (status) => {
     if (status === "seen") return "#04ff00ff"; // green
-    if (status === "delivered") return theme.palette.mode === "dark" ? "#ffffffff" : "#fff";
+    if (status === "delivered") return theme.palette.mode === "dark" ? "#ffffffff" : "#3e3e3eff";
     return "transparent";
   };
 
@@ -271,8 +271,8 @@ export default function UserMessages() {
                           <Typography
                             sx={{
                               position: "absolute",
-                              bottom: 4,
-                              right: 6,
+                              marginRight: 1,
+                              right: 1,
                               fontSize: "11px",
                               color: getTickColor(msg.status),
                               opacity: 1,
