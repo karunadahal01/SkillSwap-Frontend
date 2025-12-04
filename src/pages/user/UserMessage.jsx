@@ -14,6 +14,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 
+import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -368,7 +369,6 @@ export default function UserMessages() {
             <>
               <IconButton
                 onClick={() => {
-                  // preserve user list scroll when returning
                   if (userListRef.current) setUserListScroll(userListRef.current.scrollTop);
                   setActiveUserId(null);
                 }}
@@ -466,7 +466,6 @@ export default function UserMessages() {
               >
                 {activeUser.messages.map((msg) => {
                   const isMe = msg.sender === "me";
-                  // detect if message contains files
                   const hasFiles = msg.type === "file" && (Array.isArray(msg.files) ? msg.files.length > 0 : Boolean(msg.fileName));
                   const isImageMsg = hasFiles && ((Array.isArray(msg.files) && msg.files.every((f) => isImageName(f.fileName))) || isImageName(msg.fileName));
                   return (
@@ -480,7 +479,8 @@ export default function UserMessages() {
                       }}
                     >
                       {!isMe && <Avatar sx={{ width: 28, height: 28 }}>{activeUser.avatar}</Avatar>}
-                      <Box sx={{ maxWidth: "70%", position: "relative" }}>
+
+                      <Box sx={{ maxWidth: "70%", position: "relative", display: "flex", alignItems: "center", gap: 1 }}>
                         <Paper
                           onContextMenu={(e) => {
                             e.preventDefault();
@@ -501,18 +501,35 @@ export default function UserMessages() {
 
                           {msg.reaction && (
                             <Typography
-                              sx={{
+                            sx={{
                                 position: "absolute",
                                 bottom: -12,
-                                right: isMe ? 6 : "auto",
-                                left: isMe ? "auto" : 6,
-                                fontSize: "16px",
+                                right: 32,     // Always lock to the right side of the bubble
+                                left: "auto", // Never use left again
+                                fontSize: "14px",
+                                background: theme.palette.background.paper,
+                                borderRadius: "50%",
+                                padding: "2px 6px",
+                                boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
                               }}
                             >
                               {msg.reaction}
                             </Typography>
                           )}
                         </Paper>
+
+                        {/* ✅ ALWAYS VISIBLE REACTION BUTTON */}
+                        <IconButton
+                          size="small"
+                          onClick={(e) => openReactionMenu(e, msg)}
+                          sx={{
+                            fontSize: "18px",
+                            padding: "2px",
+                            opacity: 0.8,
+                          }}
+                        >
+                          <SentimentSatisfiedAltIcon/>
+                        </IconButton>
 
                         {isMe && msg.status && (
                           <Typography
@@ -632,7 +649,6 @@ export default function UserMessages() {
                 {attachedFiles.length > 0 && (
                   <IconButton
                     onClick={() => {
-                      // clear attachments
                       attachedFiles.forEach((f) => {
                         try {
                           URL.revokeObjectURL(f.objectURL);
