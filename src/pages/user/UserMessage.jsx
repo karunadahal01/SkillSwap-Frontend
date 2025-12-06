@@ -15,6 +15,7 @@ import {
 } from "@mui/material";
 
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import SendIcon from "@mui/icons-material/Send";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -174,6 +175,7 @@ export default function UserMessages() {
   const [messageInput, setMessageInput] = useState("");
   const [attachedFiles, setAttachedFiles] = useState([]); // support multiple
   const [userListScroll, setUserListScroll] = useState(0);
+  const [menuAnchor, setMenuAnchor] = useState(null); // For three-dots menu
 
   const chatEndRef = useRef(null);
   const userListRef = useRef(null);
@@ -269,7 +271,6 @@ export default function UserMessages() {
     setSelectedMessage(msg);
     setReactionAnchor(event.currentTarget);
   };
-
   const applyReaction = (reaction) => {
     setUsers((prev) =>
       prev.map((u) =>
@@ -277,15 +278,19 @@ export default function UserMessages() {
           ? u
           : {
               ...u,
-              messages: u.messages.map((m) =>
-                m.id === selectedMessage.id ? { ...m, reaction } : m
-              ),
+              messages: u.messages.map((m) => {
+                if (m.id === selectedMessage.id) {
+                  // If the same reaction is clicked, remove it
+                  return { ...m, reaction: m.reaction === reaction ? null : reaction };
+                }
+                return m;
+              }),
             }
       )
     );
     closeReactionMenu();
   };
-
+  
   const closeReactionMenu = () => {
     setReactionAnchor(null);
     setSelectedMessage(null);
@@ -375,10 +380,25 @@ export default function UserMessages() {
               >
                 <ArrowBackIcon />
               </IconButton>
-              <Avatar sx={{ width: 32, height: 32 }}>{activeUser.avatar}</Avatar>
+              <Avatar sx={{ width: 32, height: 32 }} onClick={() => window.open(`/user-profile/${activeUser.id}`, "_blank")}>{activeUser.avatar}</Avatar>
               <Typography variant="h6" fontWeight={600}>
                 {activeUser.name}
               </Typography>
+
+              {/* Three-dots menu */}
+              <Box sx={{marginLeft: "auto"}}>
+                <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)}>
+                  <MoreVertIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={menuAnchor}
+                  open={Boolean(menuAnchor)}
+                  onClose={() => setMenuAnchor(null)}
+                >
+                  <MenuItem onClick={() => { /* handle search */ setMenuAnchor(null); }}>Search</MenuItem>
+                  <MenuItem onClick={() => { /* handle report */ setMenuAnchor(null); }}>Report</MenuItem>
+                </Menu>
+              </Box>
             </>
           ) : (
             <Typography variant="h6" fontWeight={600} sx={{ ml: 4 }}>
@@ -551,10 +571,45 @@ export default function UserMessages() {
                 <div ref={chatEndRef} />
               </Box>
 
-              {/* Reaction Menu */}
-              <Menu anchorEl={reactionAnchor} open={Boolean(reactionAnchor)} onClose={closeReactionMenu}>
+              {/* Reaction Menu - Horizontal layout using slotProps */}
+              <Menu
+                anchorEl={reactionAnchor}
+                open={Boolean(reactionAnchor)}
+                onClose={closeReactionMenu}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      padding: "auto",
+                      borderRadius: "30px",
+                      display: "flex",
+                      flexDirection: "row",
+                      boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
+                    },
+                  },
+                  list: {
+                    sx: {
+                      display: "flex",
+                      flexDirection: "row",
+                      px: 0,
+                      py: 0.5,
+                    },
+                  },
+                }}
+              >
                 {reactionOptions.map((r) => (
-                  <MenuItem key={r} onClick={() => applyReaction(r)} sx={{ fontSize: "20px" }}>
+                  <MenuItem
+                    key={r}
+                    onClick={() => applyReaction(r)}
+                    sx={{
+                      fontSize: "22px",
+                      padding: "6px 10px",
+                      minWidth: "auto",
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
                     {r}
                   </MenuItem>
                 ))}

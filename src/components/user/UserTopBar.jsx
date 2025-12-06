@@ -1,13 +1,13 @@
-// src/templates/TopBar.jsx
+// src/components/user/UserTopBar.jsx
 import { AppBar, Toolbar, Box, IconButton, useTheme } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationMenu from '@components/admin/NotificationMenu';
 import AvatarMenu from '@components/admin/AvatarMenu';
 import ThemeToggle from '@components/admin/ThemeToggle';
 import Logo from '@assets/skillswap-logo.png';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
-export default function TopBar({ onLogout, toggleDrawer }) {
+export default function UserTopBar({ onLogout, toggleDrawer }) {
   const theme = useTheme(); // to detect current mode (light/dark)
   const navigate = useNavigate();
 
@@ -38,7 +38,7 @@ export default function TopBar({ onLogout, toggleDrawer }) {
 
         {/* Logo + Title */}
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
-          <Box component="img" src={Logo} alt="SkillSwap Logo" sx={{ height: 52, mr: 1.5 }} onClick={() => navigate("/admin")} />
+          <Box component="img" src={Logo} alt="SkillSwap Logo" sx={{ height: 52, mr: 1.5 }} onClick={() => navigate("/user")} />
         </Box>
 
         {/* Right-side actions */}

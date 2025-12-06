@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { Box, CssBaseline, Drawer, Toolbar, useTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
-import TopBar from '@components/admin/TopBar'; // reuse admin TopBar
+import UserTopBar from '@components/user/UserTopBar';
 import UserSidebar from '@components/user/UserSidebar';
 
 const drawerWidth = 260;
@@ -20,7 +20,7 @@ export default function UserLayout() {
       <CssBaseline />
 
       {/* TopBar */}
-      <TopBar toggleDrawer={toggleDrawer} />
+      <UserTopBar toggleDrawer={toggleDrawer} />
 
       {/* Sidebar Drawer */}
       <Box

@@ -1,33 +1,3 @@
-// // src\components\admin\NotificationMenu.jsx
-// import { useState } from 'react';
-// import { Menu, MenuItem, Badge, IconButton } from '@mui/material';
-// import NotificationsIcon from '@mui/icons-material/Notifications';
-
-// export default function NotificationMenu() {
-//   const [anchorEl, setAnchorEl] = useState(null);
-//   const open = Boolean(anchorEl);
-
-//   const handleOpen = (e) => setAnchorEl(e.currentTarget);
-//   const handleClose = () => setAnchorEl(null);
-
-//   return (
-//     <>
-//       <IconButton color="inherit" onClick={handleOpen}>
-//         <Badge badgeContent={3} color="error">
-//           <NotificationsIcon />
-//         </Badge>
-//       </IconButton>
-
-//       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-//         <MenuItem onClick={handleClose}>New order received</MenuItem>
-//         <MenuItem onClick={handleClose}>Low stock alert</MenuItem>
-//         <MenuItem onClick={handleClose}>Product added</MenuItem>
-//       </Menu>
-//     </>
-//   );
-// }
-
-
 import { useState } from 'react';
 import {
   Menu,

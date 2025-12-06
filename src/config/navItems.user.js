@@ -4,8 +4,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import ChatIcon from '@mui/icons-material/Chat';
-import PersonIcon from '@mui/icons-material/Person';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import SettingsIcon from '@mui/icons-material/Settings';
 
 const navItems = [
