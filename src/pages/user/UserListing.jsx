@@ -17,7 +17,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
 
 const mySkills = [
-  { id: 1, skill: "Guitar Lessons", category: "Music", description: "Learn acoustic guitar basics.", status: "Pending" },
+  { id: 1, skill: "Guitar Lessons", category: "Music", description: "Learn acoustic guitar basics. This description can be really long and should wrap properly without stretching the card too much.", status: "Pending" },
   { id: 2, skill: "React", category: "Coding", description: "Learn React Basics", status: "Completed" },
   { id: 3, skill: "Cooking", category: "Culinary", description: "Italian recipes", status: "Pending" },
 ];
@@ -36,9 +36,6 @@ export default function MyListings() {
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [skillToDelete, setSkillToDelete] = useState(null);
 
-  // -------------------------
-  // NEW: Add Listing State
-  // -------------------------
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [newSkill, setNewSkill] = useState({
     skill: "",
@@ -67,66 +64,60 @@ export default function MyListings() {
     setEditModalOpen(false);
   };
 
-  // -------------------------
-  // NEW: Add Listing Save
-  // -------------------------
   const handleAddSave = () => {
     const newEntry = {
       id: skills.length + 1,
       ...newSkill,
     };
-
     setSkills([...skills, newEntry]);
     setSnackbarMsg("New listing added!");
     setSnackbarOpen(true);
     setAddModalOpen(false);
-
-    setNewSkill({
-      skill: "",
-      category: categories[0],
-      description: "",
-      status: "Pending",
-    });
+    setNewSkill({ skill: "", category: categories[0], description: "", status: "Pending" });
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: { xs: 2, md: 3 } }}>
       <Typography variant="h5" gutterBottom fontWeight="bold">
         My Listings
       </Typography>
 
-      {/* ------------------- */}
-      {/* NEW: Add Listing Btn */}
-      {/* ------------------- */}
-      <Button
-        variant="contained"
-        sx={{ mb: 3 }}
-        onClick={() => setAddModalOpen(true)}
-      >
+      <Button variant="contained" sx={{ mb: 3 }} onClick={() => setAddModalOpen(true)}>
         + Add Listing
       </Button>
 
       <Grid container spacing={3}>
+        {skills.length === 0 && (
+          <Grid item xs={12}>
+            <Typography variant="body2" color="text.secondary">
+              No listings found.
+            </Typography>
+          </Grid>
+        )}
+
         {skills.map((skill) => (
-          <Grid item xs={12} sm={6} md={4} key={skill.id}>
+          <Grid item xs={12} key={skill.id} display="flex">
             <Paper
+              elevation={3}
               sx={{
                 p: 2,
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                height: "100%",
-                width: 650,
+                width: "100%",       // Full width
+                boxSizing: "border-box",
                 transition: "0.3s",
-                "&:hover": { transform: "scale(1.03)", boxShadow: theme.shadows[6] },
+                "&:hover": { transform: "scale(1.02)", boxShadow: theme.shadows[6] },
               }}
-              elevation={3}
             >
               <Box>
                 <Typography variant="subtitle1" fontWeight="bold">
                   {skill.skill}
                 </Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>
+                <Typography
+                  variant="body2"
+                  sx={{ mt: 1, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                >
                   {skill.description}
                 </Typography>
                 <Chip label={skill.category} size="small" sx={{ mt: 1 }} />
@@ -134,7 +125,8 @@ export default function MyListings() {
                   Status: {skill.status}
                 </Typography>
               </Box>
-              <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
+
+              <Box sx={{ mt: 2, display: "flex", gap: 1, flexWrap: "wrap" }}>
                 <Button variant="outlined" startIcon={<EditIcon />} onClick={() => handleEditOpen(skill)}>
                   Edit
                 </Button>
@@ -153,15 +145,9 @@ export default function MyListings() {
             </Paper>
           </Grid>
         ))}
-        {skills.length === 0 && (
-          <Grid item xs={12}>
-            <Typography variant="body2" color="text.secondary">
-              No listings found.
-            </Typography>
-          </Grid>
-        )}
       </Grid>
 
+      {/* Modals: Add/Edit/Delete */}
       {/* Edit Modal */}
       <Modal open={editModalOpen} onClose={() => setEditModalOpen(false)}>
         <Box
@@ -170,7 +156,7 @@ export default function MyListings() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 350,
+            width: { xs: "90%", sm: 400 },
             bgcolor: "background.paper",
             borderRadius: 2,
             p: 3,
@@ -224,7 +210,7 @@ export default function MyListings() {
                 value={selectedSkill.status}
                 onChange={(e) => setSelectedSkill({ ...selectedSkill, status: e.target.value })}
               />
-              <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+              <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, flexWrap: "wrap" }}>
                 <Button variant="outlined" onClick={() => setEditModalOpen(false)}>
                   Cancel
                 </Button>
@@ -237,7 +223,7 @@ export default function MyListings() {
         </Box>
       </Modal>
 
-      {/* Confirm Remove Modal */}
+      {/* Confirm Delete Modal */}
       <Modal open={confirmModalOpen} onClose={() => setConfirmModalOpen(false)}>
         <Box
           sx={{
@@ -245,7 +231,7 @@ export default function MyListings() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 300,
+            width: { xs: "85%", sm: 350 },
             bgcolor: "background.paper",
             borderRadius: 2,
             p: 3,
@@ -256,7 +242,7 @@ export default function MyListings() {
           <Typography variant="h6" gutterBottom>
             Are you sure you want to remove this listing?
           </Typography>
-          <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2 }}>
+          <Box sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 2, flexWrap: "wrap" }}>
             <Button variant="outlined" onClick={() => setConfirmModalOpen(false)}>
               Cancel
             </Button>
@@ -267,9 +253,7 @@ export default function MyListings() {
         </Box>
       </Modal>
 
-      {/* --------------------------- */}
-      {/* NEW: Add Listing Modal */}
-      {/* --------------------------- */}
+      {/* Add Listing Modal */}
       <Modal open={addModalOpen} onClose={() => setAddModalOpen(false)}>
         <Box
           sx={{
@@ -277,7 +261,7 @@ export default function MyListings() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 350,
+            width: { xs: "90%", sm: 400 },
             bgcolor: "background.paper",
             borderRadius: 2,
             p: 3,
@@ -287,7 +271,6 @@ export default function MyListings() {
           <Typography variant="h6" fontWeight="bold" gutterBottom>
             Add Listing
           </Typography>
-
           <TextField
             label="Skill Name"
             fullWidth
@@ -296,7 +279,6 @@ export default function MyListings() {
             value={newSkill.skill}
             onChange={(e) => setNewSkill({ ...newSkill, skill: e.target.value })}
           />
-
           <TextField
             label="Description"
             fullWidth
@@ -307,7 +289,6 @@ export default function MyListings() {
             value={newSkill.description}
             onChange={(e) => setNewSkill({ ...newSkill, description: e.target.value })}
           />
-
           <TextField
             label="Category"
             select
@@ -324,8 +305,7 @@ export default function MyListings() {
               </option>
             ))}
           </TextField>
-
-          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1 }}>
+          <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 1, flexWrap: "wrap" }}>
             <Button variant="outlined" onClick={() => setAddModalOpen(false)}>
               Cancel
             </Button>

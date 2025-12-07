@@ -30,7 +30,6 @@ const dummySkills = [
   { id: 10, skill: "Sketching", owner: "Nina", category: "Art", description: "Learn sketching techniques." },
 ];
 
-// Dummy owner profile data
 const ownerProfiles = {
   Alice: { bio: "Music teacher, 5 years experience", skills: ["Guitar", "Piano"] },
   Bob: { bio: "Freelance artist", skills: ["Painting", "Sketching"] },
@@ -88,7 +87,7 @@ export default function UserBrowse() {
   };
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box sx={{ p: { xs: 2, md: 3 } }}>
       <Typography variant="h5" gutterBottom fontWeight="bold">
         Browse Skills
       </Typography>
@@ -130,25 +129,33 @@ export default function UserBrowse() {
 
       {/* Skill Listings */}
       <Grid container spacing={3}>
+        {displayedSkills.length === 0 && (
+          <Grid item xs={12}>
+            <Typography variant="body2" color="text.secondary">
+              No skills found.
+            </Typography>
+          </Grid>
+        )}
+
         {displayedSkills.map((skill) => {
           const isRequested = requestedSwaps.includes(skill.id);
           return (
-            <Grid item xs={12} sm={6} md={4} key={skill.id}>
+            <Grid item xs={12} key={skill.id} display="flex">
               <Paper
+                elevation={3}
                 sx={{
                   p: 2,
                   display: "flex",
                   flexDirection: "column",
                   justifyContent: "space-between",
-                  height: "100%",
-                  width: 650,
+                  width: "100%", // Full width
+                  boxSizing: "border-box",
                   transition: "0.3s",
                   "&:hover": {
-                    transform: "scale(1.03)",
+                    transform: "scale(1.02)",
                     boxShadow: theme.shadows[6],
                   },
                 }}
-                elevation={3}
               >
                 <Box>
                   <Typography variant="subtitle1" fontWeight="bold">
@@ -162,7 +169,10 @@ export default function UserBrowse() {
                   >
                     Owner: {skill.owner}
                   </Typography>
-                  <Typography variant="body2" sx={{ mt: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ mt: 1, whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+                  >
                     {skill.description}
                   </Typography>
                   <Chip label={skill.category} size="small" sx={{ mt: 1 }} color="secondary" />
@@ -180,13 +190,6 @@ export default function UserBrowse() {
             </Grid>
           );
         })}
-        {displayedSkills.length === 0 && (
-          <Grid item xs={12}>
-            <Typography variant="body2" color="text.secondary">
-              No skills found.
-            </Typography>
-          </Grid>
-        )}
       </Grid>
 
       {/* Pagination */}
@@ -224,7 +227,7 @@ export default function UserBrowse() {
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
-            width: 300,
+            width: { xs: "90%", sm: 350 },
             bgcolor: "background.paper",
             borderRadius: 2,
             p: 3,
@@ -255,7 +258,7 @@ export default function UserBrowse() {
         </Box>
       </Modal>
 
-      {/* Snackbar for messages */}
+      {/* Snackbar */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={2500}
