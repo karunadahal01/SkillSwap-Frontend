@@ -12,7 +12,7 @@ import AdminSettings from '@pages/admin/Settings';
 
 // ---------------- User ----------------
 import UserLayout from './templates/UserLayout';
-import UserDashboard from '@pages/user/UserDashboard';
+import UserHome from '@pages/user/UserHome';
 import UserBrowse from '@pages/user/UserBrowse';
 import UserListing from '@pages/user/UserListing';
 import UserSwaps from '@pages/user/UserSwaps';
@@ -55,7 +55,7 @@ function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<UserDashboard />} />
+        <Route index element={<UserHome />} />
         <Route path="browse" element={<UserBrowse />} />
         <Route path="listings" element={<UserListing />} />
         <Route path="swaps" element={<UserSwaps />} />

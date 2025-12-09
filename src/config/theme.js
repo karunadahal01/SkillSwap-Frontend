@@ -7,7 +7,7 @@ export default function getDesignTokens(mode = 'light') {
   return createTheme({
     palette: {
       mode,
-      primary: { main: isLight ? '#1732acff' : '#7986cb' }, // calm blue-purple
+      primary: { main: isLight ? '#092f64ff' : '#7986cb' }, // calm blue-purple
       secondary: { main: isLight ? '#26a69a' : '#4db6ac' }, // friendly teal
 
       background: {
