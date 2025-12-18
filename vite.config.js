@@ -5,6 +5,9 @@ import path from 'path'
 export default defineConfig({
   base: './',    
   plugins: [react()],
+  build: {
+    outDir: 'dist', // ✅ Must match capacitor.config.js
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

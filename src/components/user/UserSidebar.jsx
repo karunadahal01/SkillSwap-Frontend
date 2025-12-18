@@ -32,20 +32,21 @@ export default function UserSidebar() {
   return (
     <Box
       sx={{
+        marginTop: 10,
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        backgroundColor: isLight ? '#f4f6f8' : '#121212',
+        backgroundColor: isLight ? '#ffffffff' : '#121212',
         transition: 'background-color 0.3s ease, color 0.3s ease',
       }}
     >
-      {/* Header */}
+      {/* Header
       <Toolbar>
         <Box sx={{ fontWeight: 'bold', fontSize: 18, color: theme.palette.primary.main }}>
           SkillSwap
         </Box>
       </Toolbar>
-      <Divider />
+      <Divider /> */}
 
       {/* Navigation */}
       <List>
@@ -69,6 +70,7 @@ export default function UserSidebar() {
                   borderRadius: 1,
                   mx: 1,
                   my: 0.3,
+                  marginTop: "auto"
                 }}
               >
                 <ListItemIcon

@@ -1,7 +1,10 @@
+// src/pages/user/UserMessage.jsx
 import React, { useState, useRef, useEffect } from "react";
 import { Box, Avatar, Typography, IconButton, Menu, MenuItem, useTheme, useMediaQuery } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { Capacitor } from '@capacitor/core';
+import { Keyboard } from '@capacitor/keyboard';
 
 import { useThemeMode } from "@context/ThemeModeContext";
 import { dummyUsers } from "@utils/dummyData";
@@ -13,6 +16,7 @@ export default function UserMessages() {
   const theme = useTheme();
   const { mode } = useThemeMode();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isNative = Capacitor.isNativePlatform();
   const sidebarWidth = 240;
 
   const [users, setUsers] = useState(dummyUsers);
@@ -20,11 +24,41 @@ export default function UserMessages() {
   const [messageInput, setMessageInput] = useState("");
   const [attachedFiles, setAttachedFiles] = useState([]);
   const [userListScroll, setUserListScroll] = useState(0);
-
-  const [menuAnchor, setMenuAnchor] = useState(null); // ← NEW MENU STATE
+  const [menuAnchor, setMenuAnchor] = useState(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const userListRef = useRef(null);
+  const inputRef = useRef(null);
   const activeUser = users.find((u) => u.id === activeUserId);
+
+  // Setup Capacitor Keyboard listeners
+  useEffect(() => {
+    if (!isNative || !activeUser) return;
+
+    const showListener = Keyboard.addListener('keyboardWillShow', (info) => {
+      setKeyboardHeight(info.keyboardHeight);
+    });
+
+    const hideListener = Keyboard.addListener('keyboardWillHide', () => {
+      setKeyboardHeight(0);
+    });
+
+    const configureKeyboard = async () => {
+      try {
+        await Keyboard.setAccessoryBarVisible({ isVisible: true });
+        await Keyboard.setResizeMode({ mode: 'native' });
+      } catch (error) {
+        console.error('Keyboard config error:', error);
+      }
+    };
+
+    configureKeyboard();
+
+    return () => {
+      showListener.remove();
+      hideListener.remove();
+    };
+  }, [isNative, activeUser]);
 
   const getStatusColor = (status) => {
     if (status === "seen") return "#04ff00";
@@ -43,14 +77,12 @@ export default function UserMessages() {
     setActiveUserId(userId);
   };
 
-  /* Restore user list scroll */
   useEffect(() => {
     if (!activeUser && userListRef.current) {
       userListRef.current.scrollTop = userListScroll;
     }
   }, [activeUser, userListScroll]);
 
-  /* Send message */
   const handleSend = () => {
     if (!messageInput && attachedFiles.length === 0) return;
 
@@ -85,14 +117,26 @@ export default function UserMessages() {
 
     attachedFiles.forEach((f) =>
       setTimeout(() => {
-        try {
-          URL.revokeObjectURL(f.objectURL);
-        } catch {}
+        try { URL.revokeObjectURL(f.objectURL); } catch {}
       }, 10000)
     );
 
     setMessageInput("");
     setAttachedFiles([]);
+
+    // setTimeout(() => {
+    //   if (inputRef?.current) inputRef.current.focus();
+    // }, 0);
+
+    setTimeout(() => {
+  if (chatEndRef.current) {
+    chatEndRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
+  }
+}, 10);
+
   };
 
   const updateMessageStatus = (msgId, newStatus) => {
@@ -113,16 +157,20 @@ export default function UserMessages() {
     ? { left: 0, width: "100%" }
     : { left: `${sidebarWidth}px`, width: `calc(100% - ${sidebarWidth}px)` };
 
+  // --- HEADER HEIGHT FOR BODY MARGIN ---
+  const headerHeight = 120; // Toolbar minHeight
+  const bodyMarginTop = `calc(${headerHeight}px + env(safe-area-inset-top))`;
+
   return (
-    <Box sx={{ display: "flex", height: "100vh" }}>
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", height: "100%" }}>
         
-        {/* HEADER */}
+        {/* FIXED HEADER */}
         <Box
           sx={{
+            marginTop: 10,
             p: 2,
             px: { xs: 1.2, sm: 2, md: 2.5 },
-            marginTop: 7,
             borderBottom: "1px solid",
             borderColor: theme.palette.divider,
             display: "flex",
@@ -131,7 +179,7 @@ export default function UserMessages() {
             bgcolor: theme.palette.background.paper,
             position: "fixed",
             top: 0,
-            zIndex: 200,
+            zIndex: 1100,
             ...fixedStyles,
           }}
         >
@@ -139,18 +187,16 @@ export default function UserMessages() {
             <>
               <ArrowBackIcon
                 onClick={() => {
-                  if (userListRef.current)
-                    setUserListScroll(userListRef.current.scrollTop);
+                  if (userListRef.current) setUserListScroll(userListRef.current.scrollTop);
                   setActiveUserId(null);
+                  if (isNative) Keyboard.hide().catch(() => {});
                 }}
                 sx={{ cursor: "pointer" }}
               />
 
               <Avatar
-                sx={{ width: 32, height: 32 }}
-                onClick={() =>
-                  window.open(`/user-profile/${activeUser.id}`, "_blank")
-                }
+                sx={{ width: 32, height: 32, cursor: "pointer" }}
+                onClick={() => window.open(`/user-profile/${activeUser.id}`, "_blank")}
               >
                 {activeUser.avatar}
               </Avatar>
@@ -159,7 +205,6 @@ export default function UserMessages() {
                 {activeUser.name}
               </Typography>
 
-              {/* 3-DOTS MENU */}
               <Box sx={{ marginLeft: "auto" }}>
                 <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)}>
                   <MoreVertIcon />
@@ -183,7 +228,15 @@ export default function UserMessages() {
         </Box>
 
         {/* BODY */}
-        <Box sx={{ flexGrow: 1, mt: "54px", mb: "64px" }}>
+        <Box 
+          sx={{ 
+            flexGrow: 1, 
+            mt: bodyMarginTop,  // <-- UPDATED HERE
+            overflow: "hidden",
+            display: "flex",
+            flexDirection: "column"
+          }}
+        >
           {!activeUser && (
             <UserList
               users={users}
@@ -209,6 +262,8 @@ export default function UserMessages() {
               renderMessageContent={renderMessageContent}
               isMobile={isMobile}
               sidebarWidth={sidebarWidth}
+              inputRef={inputRef}
+              keyboardHeight={keyboardHeight}
             />
           )}
         </Box>
@@ -216,6 +271,8 @@ export default function UserMessages() {
     </Box>
   );
 }
+
+
 
 
 // import React, { useState, useRef, useEffect } from "react";
@@ -428,6 +485,9 @@ export default function UserMessages() {
 //     </Box>
 //   );
 // }
+
+
+
 
 
 

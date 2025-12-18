@@ -18,7 +18,7 @@ export default function AttachmentPreview({ files, removeFile }) {
               position: "relative",
               width: 60,
               height: 60,
-              borderRadius: 5,
+              borderRadius: 1,
               overflow: "hidden",
               boxShadow: "0 1px 4px rgba(0,0,0,0.12)",
             }}

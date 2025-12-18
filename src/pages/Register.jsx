@@ -60,7 +60,7 @@ export default function Register() {
 
       {/* Centered form */}
       <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
-        <Paper sx={{ width: 420, maxWidth: '95%', p: 4, borderRadius: 3 }} elevation={6}>
+        <Paper sx={{ width: 420, maxWidth: '95%', p: 4, borderRadius: 6 }} elevation={6}>
           <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3, color: '#1976d2' }}>
             Register
           </Typography>

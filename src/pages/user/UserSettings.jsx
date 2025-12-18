@@ -109,6 +109,7 @@ export default function UserSettings() {
         p: { xs: 2, md: 4 },
         maxWidth: "1000px",
         margin: "auto",
+        marginTop:8
       }}
     >
       <Typography variant="h5" fontWeight={600} sx={{ mb: 3 }}>

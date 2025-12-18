@@ -2,5 +2,14 @@
   "appId": "com.skillswap.app",
   "appName": "SkillSwap",
   "webDir": "dist",
-  "bundledWebRuntime": false
+  "bundledWebRuntime": false,
+  "plugins": {
+    "Keyboard": {
+      "resize": "none",
+      "resizeOnFullScreen": false
+    }
+  },
+  "server": {
+    "androidScheme": "https"
+  }
 }
