@@ -135,7 +135,7 @@ export default function UserSwaps() {
   const requestLabel = (s) => (s.direction === "incoming" ? "Requested you" : "You requested");
 
   return (
-    <Box sx={{ p: { xs: 2, md: 3 }, marginTop:8}}>
+    <Box sx={{ p: { xs: 2, md: 3 }, marginTop:4}}>
       <Typography variant="h5" gutterBottom fontWeight="bold">
         My Swaps
       </Typography>

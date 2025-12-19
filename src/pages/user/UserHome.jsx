@@ -9,7 +9,6 @@ export default function UserHome() {
   return (
     <Box
       sx={{
-        marginTop:8,
         minHeight: "100vh",
         p: { xs: 3, sm: 5 },
         display: "flex",

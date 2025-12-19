@@ -87,7 +87,7 @@ export default function UserBrowse() {
   };
 
   return (
-    <Box sx={{ p: { xs: 2, md: 3 }, marginTop:8}}>
+    <Box sx={{ p: { xs: 2, md: 3 }, marginTop:4}}>
       <Typography variant="h5" gutterBottom fontWeight="bold">
         Browse Skills
       </Typography>
