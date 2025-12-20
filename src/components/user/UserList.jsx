@@ -7,9 +7,10 @@ export default function UserList({ users, activeUserId, onSelectUser, getStatusI
   return (
     <Box
       sx={{
+        marginTop:3,
         flexGrow: 1,
         overflowY: "auto",
-        p: 1,
+        p: 2,
         bgcolor: theme.palette.mode === "dark" ? "#191818" : "#f4f6f8",
       }}
     >

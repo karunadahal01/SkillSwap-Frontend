@@ -341,9 +341,6 @@
 //   );
 // }
 
-
-
-
 // src/templates/UserLayout.jsx
 import { Box, CssBaseline, useTheme, useMediaQuery } from "@mui/material";
 import { Outlet, useLocation } from "react-router-dom";
@@ -355,31 +352,29 @@ export default function UserLayout() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const location = useLocation();
 
-  // Show bottom nav
-  // Mobile: only on certain pages (as before)
-  // Web: always show bottom nav for testing/navigation
-  const showBottomNav =
-    isMobile
-      ? ["/user", "/user/browse", "/user/listings", "/user/swaps", "/user/settings", "/user/messages"].includes(location.pathname)
-      : true; // always show on web
+  // hide bottom nav ONLY when in chat screen
+  const hideBottomNav = location.pathname.startsWith("/user/messages/");
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       <CssBaseline />
 
-      {/* Top Bar */}
       <UserTopBar />
 
-      {/* Main content */}
       <Box
         component="main"
-        sx={{ flexGrow: 1, overflowY: "auto", marginTop: 8, marginBottom: showBottomNav ? 8 : 0 }}
+        sx={{
+          flexGrow: 1,
+          overflowY: "auto",
+          marginTop: 8,
+          marginBottom: hideBottomNav ? 0 : 8,
+        }}
       >
         <Outlet />
       </Box>
 
-      {/* Bottom Navigation */}
-      {showBottomNav && <UserBottomNav currentPath={location.pathname} />}
+      {/* show bottom nav unless in chat */}
+      {!hideBottomNav && <UserBottomNav currentPath={location.pathname} />}
     </Box>
   );
 }

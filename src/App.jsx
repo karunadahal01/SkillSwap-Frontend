@@ -17,6 +17,7 @@ import UserBrowse from '@pages/user/UserBrowse';
 import UserListing from '@pages/user/UserListing';
 import UserSwaps from '@pages/user/UserSwaps';
 import UserMessage from '@pages/user/UserMessage';
+import UserMessageList from '@pages/user/UserMessageList'
 import UserSettings from '@pages/user/UserSettings';
 
 // ---------------- Auth ----------------
@@ -59,7 +60,8 @@ function App() {
         <Route path="browse" element={<UserBrowse />} />
         <Route path="listings" element={<UserListing />} />
         <Route path="swaps" element={<UserSwaps />} />
-        <Route path="messages" element={<UserMessage />} />
+        <Route path="messages/:id" element={<UserMessage />} />
+        <Route path="messages" element={<UserMessageList />} />
         <Route path="settings" element={<UserSettings />} />
       </Route>
 

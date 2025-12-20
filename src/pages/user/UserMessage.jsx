@@ -1,57 +1,49 @@
-// src/pages/user/UserMessage.jsx
 import React, { useState, useRef, useEffect } from "react";
-import { Box, Avatar, Typography, IconButton, Menu, MenuItem, useTheme, useMediaQuery } from "@mui/material";
+import { Box, Avatar, Typography, IconButton, Menu, MenuItem, useTheme } from "@mui/material";
+import { useNavigate, useParams } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { Capacitor } from '@capacitor/core';
-import { Keyboard } from '@capacitor/keyboard';
+import { Capacitor } from "@capacitor/core";
+import { Keyboard } from "@capacitor/keyboard";
 
-import { useThemeMode } from "@context/ThemeModeContext";
 import { dummyUsers } from "@utils/dummyData";
-import UserList from "@components/user/UserList";
 import ChatView from "@components/user/ChatView";
-import { renderMessageContent } from "@utils/chatUtils";
 
 export default function UserMessages() {
   const theme = useTheme();
-  const { mode } = useThemeMode();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const navigate = useNavigate();
+  const { id } = useParams(); // userId for chat view
   const isNative = Capacitor.isNativePlatform();
-  const sidebarWidth = 240;
 
   const [users, setUsers] = useState(dummyUsers);
-  const [activeUserId, setActiveUserId] = useState(null);
   const [messageInput, setMessageInput] = useState("");
   const [attachedFiles, setAttachedFiles] = useState([]);
-  const [userListScroll, setUserListScroll] = useState(0);
   const [menuAnchor, setMenuAnchor] = useState(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
 
-  const userListRef = useRef(null);
   const inputRef = useRef(null);
-  const activeUser = users.find((u) => u.id === activeUserId);
 
-  // Setup Capacitor Keyboard listeners
+  const activeUser = users.find((u) => u.id === Number(id));
+
+  // Setup Capacitor keyboard listeners (mobile)
   useEffect(() => {
     if (!isNative || !activeUser) return;
 
-    const showListener = Keyboard.addListener('keyboardWillShow', (info) => {
+    const showListener = Keyboard.addListener("keyboardWillShow", (info) => {
       setKeyboardHeight(info.keyboardHeight);
     });
-
-    const hideListener = Keyboard.addListener('keyboardWillHide', () => {
+    const hideListener = Keyboard.addListener("keyboardWillHide", () => {
       setKeyboardHeight(0);
     });
 
     const configureKeyboard = async () => {
       try {
         await Keyboard.setAccessoryBarVisible({ isVisible: true });
-        await Keyboard.setResizeMode({ mode: 'native' });
+        await Keyboard.setResizeMode({ mode: "native" });
       } catch (error) {
-        console.error('Keyboard config error:', error);
+        console.error("Keyboard config error:", error);
       }
     };
-
     configureKeyboard();
 
     return () => {
@@ -59,29 +51,6 @@ export default function UserMessages() {
       hideListener.remove();
     };
   }, [isNative, activeUser]);
-
-  const getStatusColor = (status) => {
-    if (status === "seen") return "#04ff00";
-    if (status === "delivered") return theme.palette.text.secondary;
-    return theme.palette.text.disabled;
-  };
-
-  const getStatusIcon = (status) => {
-    if (!status) return "";
-    if (status === "sent") return "✓";
-    if (status === "delivered") return "✓✓";
-    if (status === "seen") return "✓✓";
-  };
-
-  const handleSelectUser = (userId) => {
-    setActiveUserId(userId);
-  };
-
-  useEffect(() => {
-    if (!activeUser && userListRef.current) {
-      userListRef.current.scrollTop = userListScroll;
-    }
-  }, [activeUser, userListScroll]);
 
   const handleSend = () => {
     if (!messageInput && attachedFiles.length === 0) return;
@@ -108,169 +77,392 @@ export default function UserMessages() {
 
     setUsers((prev) =>
       prev.map((u) =>
-        u.id === activeUserId ? { ...u, messages: [...u.messages, newMsg] } : u
+        u.id === activeUser.id ? { ...u, messages: [...u.messages, newMsg] } : u
       )
     );
 
-    setTimeout(() => updateMessageStatus(newMsg.id, "delivered"), 600);
-    setTimeout(() => updateMessageStatus(newMsg.id, "seen"), 1500);
-
-    attachedFiles.forEach((f) =>
-      setTimeout(() => {
-        try { URL.revokeObjectURL(f.objectURL); } catch {}
-      }, 10000)
-    );
+    attachedFiles.forEach((f) => {
+      try {
+        URL.revokeObjectURL(f.objectURL);
+      } catch {}
+    });
 
     setMessageInput("");
     setAttachedFiles([]);
-
-    // setTimeout(() => {
-    //   if (inputRef?.current) inputRef.current.focus();
-    // }, 0);
-
-    setTimeout(() => {
-  if (chatEndRef.current) {
-    chatEndRef.current.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-    });
-  }
-}, 10);
-
   };
 
-  const updateMessageStatus = (msgId, newStatus) => {
-    setUsers((prev) =>
-      prev.map((u) => {
-        if (u.id !== activeUserId) return u;
-        const messages = u.messages.map((m) =>
-          m.sender === "me" && m.id === msgId && m.status !== "seen"
-            ? { ...m, status: newStatus }
-            : m
-        );
-        return { ...u, messages };
-      })
-    );
+  const getStatusColor = (status) => {
+    if (status === "seen") return "#04ff00";
+    if (status === "delivered") return theme.palette.text.secondary;
+    return theme.palette.text.disabled;
   };
 
-  const fixedStyles = isMobile
-    ? { left: 0, width: "100%" }
-    : { left: `${sidebarWidth}px`, width: `calc(100% - ${sidebarWidth}px)` };
-
-  // --- HEADER HEIGHT FOR BODY MARGIN ---
-  const headerHeight = 120; // Toolbar minHeight
-  const bodyMarginTop = `calc(${headerHeight}px + env(safe-area-inset-top))`;
+  const getStatusIcon = (status) => {
+    if (!status) return "";
+    if (status === "sent") return "✓";
+    if (status === "delivered") return "✓✓";
+    if (status === "seen") return "✓✓";
+  };
 
   return (
-    <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", height: "100%" }}>
-        
-        {/* FIXED HEADER */}
-        <Box
-          sx={{
-            marginTop: 10,
-            p: 2,
-            px: { xs: 1.2, sm: 2, md: 2.5 },
-            borderBottom: "1px solid",
-            borderColor: theme.palette.divider,
-            display: "flex",
-            alignItems: "center",
-            gap: 1,
-            bgcolor: theme.palette.background.paper,
-            position: "fixed",
-            top: 0,
-            zIndex: 1100,
-            ...fixedStyles,
-          }}
-        >
-          {activeUser ? (
-            <>
-              <ArrowBackIcon
-                onClick={() => {
-                  if (userListRef.current) setUserListScroll(userListRef.current.scrollTop);
-                  setActiveUserId(null);
-                  if (isNative) Keyboard.hide().catch(() => {});
-                }}
-                sx={{ cursor: "pointer" }}
-              />
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden" }}>
+      {/* ===== FIXED HEADER ===== */}
+      <Box
+        sx={{
+          marginTop: 10,
+          p: 2,
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          borderBottom: "1px solid",
+          borderColor: theme.palette.divider,
+          bgcolor: theme.palette.background.paper,
+          position: "fixed",
+          top: 0 ,
+          zIndex: 10,
+          width: "100%",
+        }}
+      >
+        {activeUser && (
+          <>
+            <ArrowBackIcon
+              onClick={() => navigate("/user/messages")}
+              sx={{ cursor: "pointer" }}
+            />
 
-              <Avatar
-                sx={{ width: 32, height: 32, cursor: "pointer" }}
-                onClick={() => window.open(`/user-profile/${activeUser.id}`, "_blank")}
-              >
-                {activeUser.avatar}
-              </Avatar>
+            <Avatar
+              sx={{ width: 32, height: 32, cursor: "pointer" }}
+              onClick={() => navigate(`/user/profile/${activeUser.id}`)}
+            >
+              {activeUser.avatar}
+            </Avatar>
 
-              <Typography variant="h6" fontWeight={600}>
-                {activeUser.name}
-              </Typography>
-
-              <Box sx={{ marginLeft: "auto" }}>
-                <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)}>
-                  <MoreVertIcon />
-                </IconButton>
-
-                <Menu
-                  anchorEl={menuAnchor}
-                  open={Boolean(menuAnchor)}
-                  onClose={() => setMenuAnchor(null)}
-                >
-                  <MenuItem onClick={() => setMenuAnchor(null)}>Search</MenuItem>
-                  <MenuItem onClick={() => setMenuAnchor(null)}>Report</MenuItem>
-                </Menu>
-              </Box>
-            </>
-          ) : (
-            <Typography variant="h6" fontWeight={600} sx={{ ml: 4 }}>
-              Chat
+            <Typography variant="h6" fontWeight={600}>
+              {activeUser.name}
             </Typography>
-          )}
-        </Box>
 
-        {/* BODY */}
-        <Box 
-          sx={{ 
-            flexGrow: 1, 
-            mt: bodyMarginTop,  // <-- UPDATED HERE
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column"
-          }}
-        >
-          {!activeUser && (
-            <UserList
-              users={users}
-              setActiveUserId={setActiveUserId}
-              userListRef={userListRef}
-              setUserListScroll={setUserListScroll}
-              getStatusColor={getStatusColor}
-              getStatusIcon={getStatusIcon}
-              onSelectUser={handleSelectUser}
-            />
-          )}
+            <Box sx={{ marginLeft: "auto" }}>
+              <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)}>
+                <MoreVertIcon />
+              </IconButton>
 
-          {activeUser && (
-            <ChatView
-              activeUser={activeUser}
-              users={users}
-              setUsers={setUsers}
-              messageInput={messageInput}
-              setMessageInput={setMessageInput}
-              attachedFiles={attachedFiles}
-              setAttachedFiles={setAttachedFiles}
-              handleSend={handleSend}
-              renderMessageContent={renderMessageContent}
-              isMobile={isMobile}
-              sidebarWidth={sidebarWidth}
-              inputRef={inputRef}
-              keyboardHeight={keyboardHeight}
-            />
-          )}
-        </Box>
+              <Menu
+                anchorEl={menuAnchor}
+                open={Boolean(menuAnchor)}
+                onClose={() => setMenuAnchor(null)}
+              >
+                <MenuItem onClick={() => setMenuAnchor(null)}>Search</MenuItem>
+                <MenuItem onClick={() => setMenuAnchor(null)}>Report</MenuItem>
+              </Menu>
+            </Box>
+          </>
+        )}
+
+        {!activeUser && (
+          <Typography variant="h6" fontWeight={600}>
+            Chat
+          </Typography>
+        )}
       </Box>
+
+      {/* ===== CHAT VIEW ===== */}
+      {activeUser && (
+        <ChatView
+          activeUser={activeUser}
+          users={users}
+          setUsers={setUsers}
+          messageInput={messageInput}
+          setMessageInput={setMessageInput}
+          attachedFiles={attachedFiles}
+          setAttachedFiles={setAttachedFiles}
+          handleSend={handleSend}
+          isMobile={true}
+          inputRef={inputRef}
+          keyboardHeight={keyboardHeight}
+          sidebarWidth={0}
+        />
+      )}
     </Box>
   );
 }
+
+
+
+
+
+// // src/pages/user/UserMessage.jsx
+// import React, { useState, useRef, useEffect } from "react";
+// import { Box, Avatar, Typography, IconButton, Menu, MenuItem, useTheme, useMediaQuery } from "@mui/material";
+// import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+// import MoreVertIcon from "@mui/icons-material/MoreVert";
+// import { Capacitor } from '@capacitor/core';
+// import { Keyboard } from '@capacitor/keyboard';
+
+// import { useThemeMode } from "@context/ThemeModeContext";
+// import { dummyUsers } from "@utils/dummyData";
+// import UserList from "@components/user/UserList";
+// import ChatView from "@components/user/ChatView";
+// import { renderMessageContent } from "@utils/chatUtils";
+
+// export default function UserMessages() {
+//   const theme = useTheme();
+//   const { mode } = useThemeMode();
+//   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+//   const isNative = Capacitor.isNativePlatform();
+//   const sidebarWidth = 240;
+
+//   const [users, setUsers] = useState(dummyUsers);
+//   const [activeUserId, setActiveUserId] = useState(null);
+//   const [messageInput, setMessageInput] = useState("");
+//   const [attachedFiles, setAttachedFiles] = useState([]);
+//   const [userListScroll, setUserListScroll] = useState(0);
+//   const [menuAnchor, setMenuAnchor] = useState(null);
+//   const [keyboardHeight, setKeyboardHeight] = useState(0);
+
+//   const userListRef = useRef(null);
+//   const inputRef = useRef(null);
+//   const activeUser = users.find((u) => u.id === activeUserId);
+
+//   // Setup Capacitor Keyboard listeners
+//   useEffect(() => {
+//     if (!isNative || !activeUser) return;
+
+//     const showListener = Keyboard.addListener('keyboardWillShow', (info) => {
+//       setKeyboardHeight(info.keyboardHeight);
+//     });
+
+//     const hideListener = Keyboard.addListener('keyboardWillHide', () => {
+//       setKeyboardHeight(0);
+//     });
+
+//     const configureKeyboard = async () => {
+//       try {
+//         await Keyboard.setAccessoryBarVisible({ isVisible: true });
+//         await Keyboard.setResizeMode({ mode: 'native' });
+//       } catch (error) {
+//         console.error('Keyboard config error:', error);
+//       }
+//     };
+
+//     configureKeyboard();
+
+//     return () => {
+//       showListener.remove();
+//       hideListener.remove();
+//     };
+//   }, [isNative, activeUser]);
+
+//   const getStatusColor = (status) => {
+//     if (status === "seen") return "#04ff00";
+//     if (status === "delivered") return theme.palette.text.secondary;
+//     return theme.palette.text.disabled;
+//   };
+
+//   const getStatusIcon = (status) => {
+//     if (!status) return "";
+//     if (status === "sent") return "✓";
+//     if (status === "delivered") return "✓✓";
+//     if (status === "seen") return "✓✓";
+//   };
+
+//   const handleSelectUser = (userId) => {
+//     setActiveUserId(userId);
+//   };
+
+//   useEffect(() => {
+//     if (!activeUser && userListRef.current) {
+//       userListRef.current.scrollTop = userListScroll;
+//     }
+//   }, [activeUser, userListScroll]);
+
+//   const handleSend = () => {
+//     if (!messageInput && attachedFiles.length === 0) return;
+
+//     const filesPayload = attachedFiles.length
+//       ? attachedFiles.map((f) => ({
+//           fileName: f.name,
+//           fileURL: f.objectURL,
+//           mime: f.type,
+//         }))
+//       : null;
+
+//     const newMsg = {
+//       id: Date.now(),
+//       sender: "me",
+//       type: filesPayload ? "file" : "text",
+//       content: messageInput,
+//       fileName: attachedFiles.length === 1 ? attachedFiles[0].name : undefined,
+//       fileURL: attachedFiles.length === 1 ? attachedFiles[0].objectURL : undefined,
+//       files: filesPayload || undefined,
+//       status: "sent",
+//       reaction: null,
+//     };
+
+//     setUsers((prev) =>
+//       prev.map((u) =>
+//         u.id === activeUserId ? { ...u, messages: [...u.messages, newMsg] } : u
+//       )
+//     );
+
+//     setTimeout(() => updateMessageStatus(newMsg.id, "delivered"), 600);
+//     setTimeout(() => updateMessageStatus(newMsg.id, "seen"), 1500);
+
+//     attachedFiles.forEach((f) =>
+//       setTimeout(() => {
+//         try { URL.revokeObjectURL(f.objectURL); } catch {}
+//       }, 10000)
+//     );
+
+//     setMessageInput("");
+//     setAttachedFiles([]);
+
+//     // setTimeout(() => {
+//     //   if (inputRef?.current) inputRef.current.focus();
+//     // }, 0);
+
+//     setTimeout(() => {
+//   if (chatEndRef.current) {
+//     chatEndRef.current.scrollIntoView({
+//       behavior: "smooth",
+//       block: "nearest",
+//     });
+//   }
+// }, 10);
+
+//   };
+
+//   const updateMessageStatus = (msgId, newStatus) => {
+//     setUsers((prev) =>
+//       prev.map((u) => {
+//         if (u.id !== activeUserId) return u;
+//         const messages = u.messages.map((m) =>
+//           m.sender === "me" && m.id === msgId && m.status !== "seen"
+//             ? { ...m, status: newStatus }
+//             : m
+//         );
+//         return { ...u, messages };
+//       })
+//     );
+//   };
+
+//   const fixedStyles = isMobile
+//     ? { left: 0, width: "100%" }
+//     : { left: `${sidebarWidth}px`, width: `calc(100% - ${sidebarWidth}px)` };
+
+//   // --- HEADER HEIGHT FOR BODY MARGIN ---
+//   const headerHeight = 120; // Toolbar minHeight
+//   const bodyMarginTop = `calc(${headerHeight}px + env(safe-area-inset-top))`;
+
+//   return (
+//     <Box sx={{ display: "flex", height: "100vh", overflow: "hidden" }}>
+//       <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", height: "100%" }}>
+        
+//         {/* FIXED HEADER */}
+//         <Box
+//           sx={{
+//             marginTop: 10,
+//             p: 2,
+//             px: { xs: 1.2, sm: 2, md: 2.5 },
+//             borderBottom: "1px solid",
+//             borderColor: theme.palette.divider,
+//             display: "flex",
+//             alignItems: "center",
+//             gap: 1,
+//             bgcolor: theme.palette.background.paper,
+//             position: "fixed",
+//             top: 0,
+//             zIndex: 1100,
+//             ...fixedStyles,
+//           }}
+//         >
+//           {activeUser ? (
+//             <>
+//               <ArrowBackIcon
+//                 onClick={() => {
+//                   if (userListRef.current) setUserListScroll(userListRef.current.scrollTop);
+//                   setActiveUserId(null);
+//                   if (isNative) Keyboard.hide().catch(() => {});
+//                 }}
+//                 sx={{ cursor: "pointer" }}
+//               />
+
+//               <Avatar
+//                 sx={{ width: 32, height: 32, cursor: "pointer" }}
+//                 onClick={() => window.open(`/user-profile/${activeUser.id}`, "_blank")}
+//               >
+//                 {activeUser.avatar}
+//               </Avatar>
+
+//               <Typography variant="h6" fontWeight={600}>
+//                 {activeUser.name}
+//               </Typography>
+
+//               <Box sx={{ marginLeft: "auto" }}>
+//                 <IconButton onClick={(e) => setMenuAnchor(e.currentTarget)}>
+//                   <MoreVertIcon />
+//                 </IconButton>
+
+//                 <Menu
+//                   anchorEl={menuAnchor}
+//                   open={Boolean(menuAnchor)}
+//                   onClose={() => setMenuAnchor(null)}
+//                 >
+//                   <MenuItem onClick={() => setMenuAnchor(null)}>Search</MenuItem>
+//                   <MenuItem onClick={() => setMenuAnchor(null)}>Report</MenuItem>
+//                 </Menu>
+//               </Box>
+//             </>
+//           ) : (
+//             <Typography variant="h6" fontWeight={600} sx={{ ml: 4 }}>
+//               Chat
+//             </Typography>
+//           )}
+//         </Box>
+
+//         {/* BODY */}
+//         <Box 
+//           sx={{ 
+//             flexGrow: 1, 
+//             mt: bodyMarginTop,  // <-- UPDATED HERE
+//             overflow: "hidden",
+//             display: "flex",
+//             flexDirection: "column"
+//           }}
+//         >
+//           {!activeUser && (
+//             <UserList
+//               users={users}
+//               setActiveUserId={setActiveUserId}
+//               userListRef={userListRef}
+//               setUserListScroll={setUserListScroll}
+//               getStatusColor={getStatusColor}
+//               getStatusIcon={getStatusIcon}
+//               onSelectUser={handleSelectUser}
+//             />
+//           )}
+
+//           {activeUser && (
+//             <ChatView
+//               activeUser={activeUser}
+//               users={users}
+//               setUsers={setUsers}
+//               messageInput={messageInput}
+//               setMessageInput={setMessageInput}
+//               attachedFiles={attachedFiles}
+//               setAttachedFiles={setAttachedFiles}
+//               handleSend={handleSend}
+//               renderMessageContent={renderMessageContent}
+//               isMobile={isMobile}
+//               sidebarWidth={sidebarWidth}
+//               inputRef={inputRef}
+//               keyboardHeight={keyboardHeight}
+//             />
+//           )}
+//         </Box>
+//       </Box>
+//     </Box>
+//   );
+// }
 
 
 

@@ -753,6 +753,8 @@ export default function ChatView({
   return (
     <Box
       sx={{
+        marginTop: 10,
+        paddingBottom: 16,
         display: "flex",
         flexDirection: "column",
         height: "100%",
