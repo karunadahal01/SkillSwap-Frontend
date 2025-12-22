@@ -14,7 +14,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <AuthProvider>
           <App />
           <Toaster
-            position="bottom-center"
+            position="top-center"
             toastOptions={{
               style: {
                 borderRadius: '8px',

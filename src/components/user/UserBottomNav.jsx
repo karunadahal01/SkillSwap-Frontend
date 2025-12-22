@@ -21,6 +21,7 @@ export default function UserBottomNav({ bottomNavHeightRef }) {
       ref={bottomNavHeightRef}
       sx={{
         position: "fixed",
+        paddingBottom: 1, 
         bottom: 0,
         left: 0,
         right: 0,

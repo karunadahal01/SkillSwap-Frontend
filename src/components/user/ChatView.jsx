@@ -674,11 +674,494 @@
 // }
 
 
+// import React, { useRef, useEffect, useState } from "react";
+// import { Box, useTheme } from "@mui/material";
+// import ChatBubble from "@components/user/ChatBubble";
+// import ReactionMenu from "@components/user/ReactionMenu";
+// import { ChatInput } from "@components/user/ChatInput";
+
+// export default function ChatView({
+//   activeUser,
+//   users,
+//   setUsers,
+//   messageInput,
+//   setMessageInput,
+//   attachedFiles,
+//   setAttachedFiles,
+//   handleSend,
+//   renderMessageContent,
+//   isMobile,
+//   sidebarWidth,
+//   inputRef,
+//   keyboardHeight,
+// }) {
+//   const theme = useTheme();
+//   const chatEndRef = useRef(null);
+//   const chatContainerRef = useRef(null);
+
+//   const [reactionAnchor, setReactionAnchor] = useState(null);
+//   const [selectedMessage, setSelectedMessage] = useState(null);
+//   const [inputHeight, setInputHeight] = useState(70);
+
+//   const reactionOptions = ["👍", "❤️", "😂", "😮", "😢", "🔥"];
+
+//   // 🔹 RETURNED getStatusColor
+//   const getStatusColor = (status) => {
+//     if (status === "seen") return "#04ff00";
+//     if (status === "delivered") return theme.palette.text.secondary;
+//     return theme.palette.text.disabled;
+//   };
+
+//   useEffect(() => {
+//     if (chatEndRef.current) {
+//       setTimeout(() => {
+//         chatEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+//       }, 100);
+//     }
+//   }, [activeUser?.messages.length]);
+
+//   const openReactionMenu = (event, msg) => {
+//     setSelectedMessage(msg);
+//     setReactionAnchor(event.currentTarget);
+//   };
+
+//   const closeReactionMenu = () => {
+//     setReactionAnchor(null);
+//     setSelectedMessage(null);
+//   };
+
+//   const applyReaction = (reaction) => {
+//     setUsers((prev) =>
+//       prev.map((u) =>
+//         u.id !== activeUser.id
+//           ? u
+//           : {
+//               ...u,
+//               messages: u.messages.map((m) =>
+//                 m.id === selectedMessage.id
+//                   ? { ...m, reaction: m.reaction === reaction ? null : reaction }
+//                   : m
+//               ),
+//             }
+//       )
+//     );
+//     closeReactionMenu();
+//   };
+
+//   const bottomPadding = inputHeight + keyboardHeight + 10;
+
+//   return (
+//     <Box
+//       sx={{
+//         marginTop: 10,
+//         paddingBottom: 16,
+//         display: "flex",
+//         flexDirection: "column",
+//         height: "100%",
+//         width: "100%",
+//         overflow: "hidden",
+//         position: "relative",
+//       }}
+//     >
+//       <Box
+//         ref={chatContainerRef}
+//         sx={{
+//           flexGrow: 1,
+//           overflowY: "auto",
+//           overflowX: "hidden",
+//           p: 2,
+//           pb: `${bottomPadding}px`,
+//           bgcolor: theme.palette.mode === "dark" ? "#191818" : "#f4f6f8",
+//           WebkitOverflowScrolling: "touch",
+//         }}
+//       >
+//         {activeUser.messages.map((msg) => (
+//           <ChatBubble
+//             key={msg.id}
+//             msg={msg}
+//             activeUser={activeUser}
+//             isMe={msg.sender === "me"}
+//             openReactionMenu={openReactionMenu}
+//             getStatusColor={getStatusColor} /* ← restored */
+//             renderMessageContent={renderMessageContent}
+//           />
+//         ))}
+
+//         <div ref={chatEndRef} style={{ height: "1px" }} />
+//       </Box>
+
+//       <ReactionMenu
+//         anchorEl={reactionAnchor}
+//         open={Boolean(reactionAnchor)}
+//         onClose={closeReactionMenu}
+//         onSelectReaction={applyReaction}
+//         reactionOptions={reactionOptions}
+//       />
+
+//       <ChatInput
+//         messageInput={messageInput}
+//         setMessageInput={setMessageInput}
+//         attachedFiles={attachedFiles}
+//         setAttachedFiles={setAttachedFiles}
+//         handleSend={handleSend}
+//         inputRef={inputRef}
+//         sidebarWidth={sidebarWidth}
+//         keyboardHeight={keyboardHeight}
+//         onHeightChange={setInputHeight}
+//         handleFileInput={(files) => {
+//           const arr = Array.from(files).slice(0, 8);
+//           const withURLs = arr.map((f) => ({
+//             file: f,
+//             name: f.name,
+//             type: f.type,
+//             objectURL: URL.createObjectURL(f),
+//           }));
+//           setAttachedFiles((prev) => [...prev, ...withURLs]);
+//           if (withURLs.length === 1) setMessageInput(withURLs[0].name);
+//         }}
+//         removeAttached={(index) => {
+//           setAttachedFiles((prev) => {
+//             const copy = [...prev];
+//             const removed = copy.splice(index, 1)[0];
+//             try {
+//               URL.revokeObjectURL(removed.objectURL);
+//             } catch {}
+//             return copy;
+//           });
+//         }}
+//       />
+//     </Box>
+//   );
+// }
+
+// import React, { useRef, useEffect, useState } from "react";
+// import { Box, useTheme } from "@mui/material";
+// import ChatBubble from "@components/user/ChatBubble";
+// import ReactionMenu from "@components/user/ReactionMenu";
+// import { ChatInput } from "@components/user/ChatInput";
+// import { renderMessageContent } from "@utils/chatUtils";
+
+// export default function ChatView({
+//   activeUser,
+//   users,
+//   setUsers,
+//   messageInput,
+//   setMessageInput,
+//   attachedFiles,
+//   setAttachedFiles,
+//   handleSend,
+//   isMobile,
+//   sidebarWidth,
+//   inputRef,
+//   keyboardHeight,
+// }) {
+//   const theme = useTheme();
+//   const chatEndRef = useRef(null);
+//   const chatContainerRef = useRef(null);
+
+//   const [reactionAnchor, setReactionAnchor] = useState(null);
+//   const [selectedMessage, setSelectedMessage] = useState(null);
+//   const [inputHeight, setInputHeight] = useState(70);
+
+//   const reactionOptions = ["👍", "❤️", "😂", "😮", "😢", "🔥"];
+
+//   const getStatusColor = (status) => {
+//     if (status === "seen") return "#04ff00";
+//     if (status === "delivered") return theme.palette.text.secondary;
+//     return theme.palette.text.disabled;
+//   };
+
+//   useEffect(() => {
+//     if (chatEndRef.current) {
+//       setTimeout(() => {
+//         chatEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+//       }, 100);
+//     }
+//   }, [activeUser?.messages.length]);
+
+//   const openReactionMenu = (event, msg) => {
+//     setSelectedMessage(msg);
+//     setReactionAnchor(event.currentTarget);
+//   };
+
+//   const closeReactionMenu = () => {
+//     setReactionAnchor(null);
+//     setSelectedMessage(null);
+//   };
+
+//   const applyReaction = (reaction) => {
+//     setUsers((prev) =>
+//       prev.map((u) =>
+//         u.id !== activeUser.id
+//           ? u
+//           : {
+//               ...u,
+//               messages: u.messages.map((m) =>
+//                 m.id === selectedMessage.id
+//                   ? { ...m, reaction: m.reaction === reaction ? null : reaction }
+//                   : m
+//               ),
+//             }
+//       )
+//     );
+//     closeReactionMenu();
+//   };
+
+//   const bottomPadding = inputHeight + keyboardHeight + 10;
+
+//   return (
+//     <Box
+//       sx={{
+//         display: "flex",
+//         flexDirection: "column",
+//         height: "100%",
+//         width: "100%",
+//         overflow: "hidden",
+//         position: "relative",
+//       }}
+//     >
+//       <Box
+//         ref={chatContainerRef}
+//         sx={{
+//           flexGrow: 1,
+//           overflowY: "auto",
+//           overflowX: "hidden",
+//           p: 2,
+//           pb: `${bottomPadding}px`,
+//           bgcolor: theme.palette.mode === "dark" ? "#191818" : "#f4f6f8",
+//           WebkitOverflowScrolling: "touch",
+//         }}
+//       >
+//         {activeUser.messages.map((msg) => (
+//           <ChatBubble
+//             key={msg.id}
+//             msg={msg}
+//             activeUser={activeUser}
+//             isMe={msg.sender === "me"}
+//             openReactionMenu={openReactionMenu}
+//             getStatusColor={getStatusColor}
+//             renderMessageContent={renderMessageContent}
+//           />
+//         ))}
+
+//         <div ref={chatEndRef} style={{ height: "1px" }} />
+//       </Box>
+
+//       <ReactionMenu
+//         anchorEl={reactionAnchor}
+//         open={Boolean(reactionAnchor)}
+//         onClose={closeReactionMenu}
+//         onSelectReaction={applyReaction}
+//         reactionOptions={reactionOptions}
+//       />
+
+//       <ChatInput
+//         messageInput={messageInput}
+//         setMessageInput={setMessageInput}
+//         attachedFiles={attachedFiles}
+//         setAttachedFiles={setAttachedFiles}
+//         handleSend={handleSend}
+//         inputRef={inputRef}
+//         sidebarWidth={sidebarWidth}
+//         keyboardHeight={keyboardHeight}
+//         onHeightChange={setInputHeight}
+//         handleFileInput={(files) => {
+//           const arr = Array.from(files).slice(0, 8);
+//           const withURLs = arr.map((f) => ({
+//             file: f,
+//             name: f.name,
+//             type: f.type,
+//             objectURL: URL.createObjectURL(f),
+//           }));
+//           setAttachedFiles((prev) => [...prev, ...withURLs]);
+//           if (withURLs.length === 1) setMessageInput(withURLs[0].name);
+//         }}
+//         removeAttached={(index) => {
+//           setAttachedFiles((prev) => {
+//             const copy = [...prev];
+//             const removed = copy.splice(index, 1)[0];
+//             try {
+//               URL.revokeObjectURL(removed.objectURL);
+//             } catch {}
+//             return copy;
+//           });
+//         }}
+//       />
+//     </Box>
+//   );
+// }
+
+// // src/components/user/ChatView.jsx
+// import React, { useRef, useEffect, useState } from "react";
+// import { Box, useTheme } from "@mui/material";
+// import ChatBubble from "@components/user/ChatBubble";
+// import ReactionMenu from "@components/user/ReactionMenu";
+// import { ChatInput } from "@components/user/ChatInput";
+// import { renderMessageContent } from "@utils/chatUtils";
+
+// export default function ChatView({
+//   activeUser,
+//   users,
+//   setUsers,
+//   messageInput,
+//   setMessageInput,
+//   attachedFiles,
+//   setAttachedFiles,
+//   handleSend,
+//   isMobile,
+//   sidebarWidth,
+//   inputRef,
+//   keyboardHeight,
+// }) {
+//   const theme = useTheme();
+//   const chatEndRef = useRef(null);
+//   const chatContainerRef = useRef(null);
+
+//   const [reactionAnchor, setReactionAnchor] = useState(null);
+//   const [selectedMessage, setSelectedMessage] = useState(null);
+//   const [inputHeight, setInputHeight] = useState(70);
+
+//   const reactionOptions = ["👍", "❤️", "😂", "😮", "😢", "🔥"];
+
+//   const getStatusColor = (status) => {
+//     if (status === "seen") return "#04ff00";
+//     if (status === "delivered") return theme.palette.text.secondary;
+//     return theme.palette.text.disabled;
+//   };
+
+//   // Scroll to bottom when new messages arrive
+//   useEffect(() => {
+//     if (chatEndRef.current) {
+//       setTimeout(() => {
+//         chatEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+//       }, 100);
+//     }
+//   }, [activeUser?.messages.length]);
+
+//   const openReactionMenu = (event, msg) => {
+//     setSelectedMessage(msg);
+//     setReactionAnchor(event.currentTarget);
+//   };
+
+//   const closeReactionMenu = () => {
+//     setReactionAnchor(null);
+//     setSelectedMessage(null);
+//   };
+
+//   const applyReaction = (reaction) => {
+//     setUsers((prev) =>
+//       prev.map((u) =>
+//         u.id !== activeUser.id
+//           ? u
+//           : {
+//               ...u,
+//               messages: u.messages.map((m) =>
+//                 m.id === selectedMessage.id
+//                   ? { ...m, reaction: m.reaction === reaction ? null : reaction }
+//                   : m
+//               ),
+//             }
+//       )
+//     );
+//     closeReactionMenu();
+//   };
+
+//   const bottomPadding = inputHeight + keyboardHeight + 10;
+
+//   return (
+//     <Box
+//       sx={{
+//         display: "flex",
+//         flexDirection: "column",
+//         height: "100%",
+//         width: "100%",
+//         overflow: "hidden",
+//         position: "relative",
+//       }}
+//     >
+//       {/* Chat messages container */}
+//       <Box
+//         ref={chatContainerRef}
+//         sx={{
+//           flexGrow: 1,
+//           overflowY: "auto",
+//           overflowX: "hidden",
+//           p: 2,
+//           pb: `${bottomPadding}px`,
+//           bgcolor: theme.palette.mode === "dark" ? "#191818" : "#f4f6f8",
+//           WebkitOverflowScrolling: "touch",
+//         }}
+//       >
+//         {activeUser.messages.map((msg) => (
+//           <ChatBubble
+//             key={msg.id}
+//             msg={msg}
+//             activeUser={activeUser}
+//             isMe={msg.sender === "me"}
+//             openReactionMenu={openReactionMenu}
+//             getStatusColor={getStatusColor}
+//             renderMessageContent={renderMessageContent}
+//           />
+//         ))}
+
+//         <div ref={chatEndRef} style={{ height: "1px" }} />
+//       </Box>
+
+//       {/* Reaction menu */}
+//       <ReactionMenu
+//         anchorEl={reactionAnchor}
+//         open={Boolean(reactionAnchor)}
+//         onClose={closeReactionMenu}
+//         onSelectReaction={applyReaction}
+//         reactionOptions={reactionOptions}
+//       />
+
+//       {/* Chat input */}
+//       <ChatInput
+//         messageInput={messageInput}
+//         setMessageInput={setMessageInput}
+//         attachedFiles={attachedFiles}
+//         setAttachedFiles={setAttachedFiles}
+//         handleSend={handleSend}
+//         inputRef={inputRef}
+//         sidebarWidth={sidebarWidth}
+//         keyboardHeight={keyboardHeight}
+//         onHeightChange={setInputHeight}
+//         handleFileInput={(files) => {
+//           const arr = Array.from(files).slice(0, 8);
+//           const withURLs = arr.map((f) => ({
+//             file: f,
+//             name: f.name,
+//             type: f.type,
+//             objectURL: URL.createObjectURL(f),
+//           }));
+//           setAttachedFiles((prev) => [...prev, ...withURLs]);
+//           // DON'T set filename as message input
+//         }}
+//         removeAttached={(index) => {
+//           setAttachedFiles((prev) => {
+//             const copy = [...prev];
+//             const removed = copy.splice(index, 1)[0];
+//             try {
+//               URL.revokeObjectURL(removed.objectURL);
+//             } catch {}
+//             return copy;
+//           });
+//         }}
+//       />
+//     </Box>
+//   );
+// }
+
+
+
+// src/components/user/ChatView.jsx
 import React, { useRef, useEffect, useState } from "react";
-import { Box, useTheme } from "@mui/material";
+import { Box, useTheme, Dialog, DialogContent } from "@mui/material";
 import ChatBubble from "@components/user/ChatBubble";
 import ReactionMenu from "@components/user/ReactionMenu";
 import { ChatInput } from "@components/user/ChatInput";
+import { renderMessageContent } from "@utils/chatUtils";
 
 export default function ChatView({
   activeUser,
@@ -689,7 +1172,6 @@ export default function ChatView({
   attachedFiles,
   setAttachedFiles,
   handleSend,
-  renderMessageContent,
   isMobile,
   sidebarWidth,
   inputRef,
@@ -703,9 +1185,11 @@ export default function ChatView({
   const [selectedMessage, setSelectedMessage] = useState(null);
   const [inputHeight, setInputHeight] = useState(70);
 
+  // ✅ New state for image lightbox
+  const [lightboxImage, setLightboxImage] = useState(null);
+
   const reactionOptions = ["👍", "❤️", "😂", "😮", "😢", "🔥"];
 
-  // 🔹 RETURNED getStatusColor
   const getStatusColor = (status) => {
     if (status === "seen") return "#04ff00";
     if (status === "delivered") return theme.palette.text.secondary;
@@ -753,8 +1237,6 @@ export default function ChatView({
   return (
     <Box
       sx={{
-        marginTop: 10,
-        paddingBottom: 16,
         display: "flex",
         flexDirection: "column",
         height: "100%",
@@ -763,9 +1245,11 @@ export default function ChatView({
         position: "relative",
       }}
     >
+      {/* Chat messages container */}
       <Box
         ref={chatContainerRef}
         sx={{
+          marginTop: 4,
           flexGrow: 1,
           overflowY: "auto",
           overflowX: "hidden",
@@ -782,14 +1266,15 @@ export default function ChatView({
             activeUser={activeUser}
             isMe={msg.sender === "me"}
             openReactionMenu={openReactionMenu}
-            getStatusColor={getStatusColor} /* ← restored */
-            renderMessageContent={renderMessageContent}
+            getStatusColor={getStatusColor}
+            renderMessageContent={(m) => renderMessageContent(m, setLightboxImage)} // ✅ pass callback
           />
         ))}
 
         <div ref={chatEndRef} style={{ height: "1px" }} />
       </Box>
 
+      {/* Reaction menu */}
       <ReactionMenu
         anchorEl={reactionAnchor}
         open={Boolean(reactionAnchor)}
@@ -798,6 +1283,7 @@ export default function ChatView({
         reactionOptions={reactionOptions}
       />
 
+      {/* Chat input */}
       <ChatInput
         messageInput={messageInput}
         setMessageInput={setMessageInput}
@@ -817,7 +1303,6 @@ export default function ChatView({
             objectURL: URL.createObjectURL(f),
           }));
           setAttachedFiles((prev) => [...prev, ...withURLs]);
-          if (withURLs.length === 1) setMessageInput(withURLs[0].name);
         }}
         removeAttached={(index) => {
           setAttachedFiles((prev) => {
@@ -830,6 +1315,13 @@ export default function ChatView({
           });
         }}
       />
+
+      {/* ✅ Image lightbox */}
+      <Dialog open={Boolean(lightboxImage)} onClose={() => setLightboxImage(null)} maxWidth="lg">
+        <DialogContent sx={{ p: 0, bgcolor: "black" }}>
+          <img src={lightboxImage} alt="" style={{ width: "100%", height: "auto" }} />
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }
