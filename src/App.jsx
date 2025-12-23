@@ -17,12 +17,15 @@ import UserBrowse from '@pages/user/UserBrowse';
 import UserListing from '@pages/user/UserListing';
 import UserSwaps from '@pages/user/UserSwaps';
 import UserMessage from '@pages/user/UserMessage';
-import UserMessageList from '@pages/user/UserMessageList'
+import UserMessageList from '@pages/user/UserMessageList';
 import UserSettings from '@pages/user/UserSettings';
 
 // ---------------- Auth ----------------
 import Login from '@pages/Login';
 import Register from '@pages/Register';
+
+// ✅ ADD THIS
+import SkillSetup from '@pages/user/SkillSetup';
 
 function App() {
   return (
@@ -30,6 +33,9 @@ function App() {
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+
+      {/* ✅ Skill setup must be PUBLIC */}
+      <Route path="/skill-setup" element={<SkillSetup />} />
 
       {/* Protected Admin Routes */}
       <Route

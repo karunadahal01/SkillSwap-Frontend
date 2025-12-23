@@ -31,11 +31,24 @@ export default function Register() {
         password: data.password,
       });
       console.log('✅ Response from registerUser:', res);
-
       if (res && (res.ok || res.user)) {
         toast.success('Account created successfully!', { id: toastId });
-        setTimeout(() => navigate('/login', { replace: true }), 800);
-      } else {
+
+        // store temp user id or email (for skill setup)
+        localStorage.setItem(
+          'pendingSkillSetup',
+          JSON.stringify({ email: data.email })
+        );
+
+        setTimeout(() => navigate('/skill-setup', { replace: true }), 800);
+      }
+
+
+      // if (res && (res.ok || res.user)) {
+      //   toast.success('Account created successfully!', { id: toastId });
+      //   setTimeout(() => navigate('/login', { replace: true }), 800);
+      // }
+       else {
         toast.error(res.message || 'Registration failed.', { id: toastId });
       }
     } catch (err) {
