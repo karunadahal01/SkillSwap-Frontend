@@ -20,7 +20,7 @@ export default function AvatarMenu() {
             color: '#fff',       // text color
           }}
         >
-          {user?.name?.[0]?.toUpperCase() || 'U'}</Avatar>
+          {user?.username?.[0]?.toUpperCase() || 'U'}</Avatar>
       </IconButton>
 
       <Menu
@@ -32,7 +32,7 @@ export default function AvatarMenu() {
       >
         {/* User info */}
         <Box sx={{ px: 2, py: 1 }}>
-          <Typography variant="subtitle1">{user?.name || 'User'}</Typography>
+          <Typography variant="subtitle1">{user?.username || 'User'}</Typography>
           <Typography variant="body2" color="text.secondary">{user?.email || 'No Email'}</Typography>
         </Box>
 

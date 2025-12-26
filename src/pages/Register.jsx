@@ -26,7 +26,7 @@ export default function Register() {
     const toastId = toast.loading('Creating account...');
     try {
       const res = await registerUser({
-        name: data.username, // map username from schema to name for AuthContext
+        username: data.username, // map username from schema to name for AuthContext
         email: data.email,
         password: data.password,
       });
@@ -138,3 +138,187 @@ export default function Register() {
     </Box>
   );
 }
+
+// // src/pages/Register.jsx
+// import React, { useState, useEffect } from 'react';
+// import { Box, Paper, TextField, Button, Typography, Avatar, IconButton } from '@mui/material';
+// import { Link, useNavigate } from 'react-router-dom';
+// import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+// import { useAuth } from '@context/AuthContext';
+// import Logo from '@assets/skillswap-logo.png';
+// import { useForm } from 'react-hook-form';
+// import { yupResolver } from '@hookform/resolvers/yup';
+// import { registerSchema } from '@utils/validationSchemas';
+// import toast from 'react-hot-toast';
+
+// export default function Register() {
+//   const { register: registerUser, loading } = useAuth();
+//   const navigate = useNavigate();
+
+//   const [profileImage, setProfileImage] = useState(null);
+//   const [previewImage, setPreviewImage] = useState(null);
+
+//   const {
+//     register: formRegister,
+//     handleSubmit,
+//     formState: { errors },
+//   } = useForm({
+//     resolver: yupResolver(registerSchema),
+//   });
+
+//   // Create a preview URL whenever profileImage changes
+//   useEffect(() => {
+//     if (!profileImage) {
+//       setPreviewImage(null);
+//       return;
+//     }
+
+//     const objectUrl = URL.createObjectURL(profileImage);
+//     setPreviewImage(objectUrl);
+
+//     return () => URL.revokeObjectURL(objectUrl);
+//   }, [profileImage]);
+
+//   const onSubmit = async (data) => {
+//     const toastId = toast.loading('Creating account...');
+
+//     try {
+//       const formData = new FormData();
+//       formData.append('username', data.username);
+//       formData.append('email', data.email);
+//       formData.append('password', data.password);
+//       if (profileImage) formData.append('profileImage', profileImage);
+
+//       const res = await registerUser(formData);
+
+//       if (res && (res.ok || res.user)) {
+//         toast.success('Account created successfully!', { id: toastId });
+
+//         localStorage.setItem(
+//           'pendingSkillSetup',
+//           JSON.stringify({ email: data.email })
+//         );
+
+//         setTimeout(() => navigate('/skill-setup', { replace: true }), 800);
+//       } else {
+//         toast.error(res.message || 'Registration failed.', { id: toastId });
+//       }
+//     } catch (err) {
+//       console.error('❌ onSubmit error:', err);
+//       toast.error('Unexpected error occurred.', { id: toastId });
+//     }
+//   };
+
+//   return (
+//     <Box
+//       sx={{
+//         minHeight: '100vh',
+//         display: 'flex',
+//         flexDirection: 'column',
+//         background: 'linear-gradient(to bottom right, #ffffff, #325cb9)',
+//       }}
+//     >
+//       {/* Top logo */}
+//       <Box sx={{ display: 'flex', alignItems: 'center', p: 3 }}>
+//         <Box component="img" src={Logo} alt="SkillSwap Logo" sx={{ height: 80, mr: 2 }} />
+//       </Box>
+
+//       {/* Centered form */}
+//       <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
+//         <Paper sx={{ width: 420, maxWidth: '95%', p: 4, borderRadius: 6 }} elevation={6}>
+//           <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3, color: '#1976d2' }}>
+//             Register
+//           </Typography>
+
+//           <Box
+//             component="form"
+//             onSubmit={handleSubmit(onSubmit)}
+//             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+//           >
+//             <TextField
+//               label="Username"
+//               fullWidth
+//               {...formRegister('username')}
+//               error={!!errors.username}
+//               helperText={errors.username?.message}
+//             />
+//             <TextField
+//               label="Email"
+//               fullWidth
+//               {...formRegister('email')}
+//               error={!!errors.email}
+//               helperText={errors.email?.message}
+//             />
+//             <TextField
+//               label="Password"
+//               type="password"
+//               fullWidth
+//               {...formRegister('password')}
+//               error={!!errors.password}
+//               helperText={errors.password?.message}
+//             />
+//             <TextField
+//               label="Confirm Password"
+//               type="password"
+//               fullWidth
+//               {...formRegister('confirmPassword')}
+//               error={!!errors.confirmPassword}
+//               helperText={errors.confirmPassword?.message}
+//             />
+
+//             {/* Attractive Profile Image Upload */}
+//             <Box
+//               sx={{
+//                 display: 'flex',
+//                 alignItems: 'center',
+//                 gap: 2,
+//                 mt: 1,
+//               }}
+//             >
+//               <Avatar
+//                 src={previewImage}
+//                 sx={{ width: 70, height: 70, bgcolor: '#1976d2' }}
+//               >
+//                 {!previewImage && profileImage === null && 'U'}
+//               </Avatar>
+//               <label htmlFor="profile-image-upload">
+//                 <input
+//                   accept="image/*"
+//                   id="profile-image-upload"
+//                   type="file"
+//                   style={{ display: 'none' }}
+//                   onChange={(e) => setProfileImage(e.target.files[0])}
+//                 />
+//                 <IconButton color="primary" component="span">
+//                   <PhotoCameraIcon />
+//                 </IconButton>
+//               </label>
+//               <Typography variant="body2" color="textSecondary">
+//                 Upload Profile Image
+//               </Typography>
+//             </Box>
+
+//             <Button
+//               type="submit"
+//               variant="contained"
+//               fullWidth
+//               sx={{ mt: 3, backgroundColor: '#1976d2', '&:hover': { backgroundColor: '#1565c0' } }}
+//               disabled={loading}
+//             >
+//               {loading ? 'Creating account...' : 'Create account'}
+//             </Button>
+
+//             <Box sx={{ mt: 2, textAlign: 'center' }}>
+//               <Typography variant="body2">
+//                 Already have an account?{' '}
+//                 <Link to="/login" style={{ color: '#1976d2' }}>
+//                   Login
+//                 </Link>
+//               </Typography>
+//             </Box>
+//           </Box>
+//         </Paper>
+//       </Box>
+//     </Box>
+//   );
+// }

@@ -3,7 +3,10 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig({
-  base: './',    
+  base: './',
+  server: {
+    port:3000
+  },
   plugins: [react()],
   build: {
     outDir: 'dist', // ✅ Must match capacitor.config.js
@@ -17,6 +20,7 @@ export default defineConfig({
       '@context': path.resolve(__dirname, './src/context'),
       '@utils': path.resolve(__dirname, './src/utils'),
       '@config': path.resolve(__dirname, './src/config'),
+      '@services': path.resolve(__dirname, './src/services'),
     },
   },
 })

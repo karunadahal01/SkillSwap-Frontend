@@ -6,8 +6,6 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import AdminLayout from './templates/AdminLayout';
 import AdminDashboard from '@pages/admin/AdminDashboard';
 import Users from '@pages/admin/Users';
-import Skills from '@pages/admin/Skills';
-import Swaps from '@pages/admin/Swaps';
 import AdminSettings from '@pages/admin/Settings';
 
 // ---------------- User ----------------
@@ -23,6 +21,8 @@ import UserSettings from '@pages/user/UserSettings';
 // ---------------- Auth ----------------
 import Login from '@pages/Login';
 import Register from '@pages/Register';
+import ForgotPassword from '@pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 // ✅ ADD THIS
 import SkillSetup from '@pages/user/SkillSetup';
@@ -33,6 +33,8 @@ function App() {
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />}/>
+      <Route path="/reset-password" element={<ResetPassword />}/>
 
       {/* ✅ Skill setup must be PUBLIC */}
       <Route path="/skill-setup" element={<SkillSetup />} />
@@ -48,8 +50,6 @@ function App() {
       >
         <Route index element={<AdminDashboard />} />
         <Route path="users" element={<Users />} />
-        <Route path="skills" element={<Skills />} />
-        <Route path="swaps" element={<Swaps />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>
 

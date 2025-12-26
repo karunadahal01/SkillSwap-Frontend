@@ -261,9 +261,14 @@ export default function UserSwaps() {
                       </Button>
                     )}
                     {s.status === "Accepted" && (
+                      <>
                       <Button size="small" variant="contained" color="primary" onClick={() => requestConfirm("complete", s)}>
                         Mark Completed
                       </Button>
+                      <Button size="small" variant="outlined" color="error" startIcon={<CancelIcon />} onClick={() => requestConfirm("cancel", s)}>
+                        Cancel
+                      </Button>
+                      </>
                     )}
                   </Box>
                 </Paper>
