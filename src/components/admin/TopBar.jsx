@@ -31,9 +31,9 @@ export default function TopBar({ onLogout, toggleDrawer }) {
           color="inherit"
           edge="start"
           onClick={toggleDrawer}
-          sx={{ mr: 2, display: { md: 'none' } }}
+          sx={{ mr: 2, display: { md: 'none' } }} // hide on desktop
         >
-          <MenuIcon />
+          <MenuIcon /> {/* hamburger icon */}
         </IconButton>
 
         {/* Logo + Title */}

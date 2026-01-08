@@ -3,7 +3,7 @@ import axios from 'axios';
 
 const api = axios.create({
   // ✅ UPDATED: Use your laptop's actual IP address
-  baseURL: 'http://192.168.254.4:8080',
+  baseURL: 'http://192.168.254.5:8080',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -38,7 +38,7 @@ api.interceptors.response.use(
         if (refreshToken) {
           // Try to refresh the access token
           const response = await axios.post(
-            'http://192.168.254.4:8080/api/auth/refresh',
+            'http://192.168.254.5:8080/api/auth/refresh',
             { refreshToken }
           );
 

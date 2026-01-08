@@ -14,19 +14,19 @@ import {
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import navItems from '@config/navItems.data';
 import LogoutIcon from '@mui/icons-material/Logout';
-import { useAuth } from '@context/AuthContext'; 
+import { useAuth } from '@context/AuthContext'; // auth context
 
 export default function SideBarContent() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const { logout } = useAuth(); // comes from context
+  const location = useLocation(); // current route
+  const navigate = useNavigate(); // router navigation
+  const theme = useTheme(); // MUI theme
+  const { logout } = useAuth(); // logout function
 
-  const isLight = theme.palette.mode === 'light';
+  const isLight = theme.palette.mode === 'light'; // theme mode
 
   const handleLogout = () => {
     logout(); // clear session
-    navigate('/login'); // redirect to login page
+    navigate('/login'); // redirect login
   };
 
   return (
@@ -35,28 +35,28 @@ export default function SideBarContent() {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        backgroundColor: isLight ? '#f4f6f8' : '#121212',
-        transition: 'background-color 0.3s ease, color 0.3s ease',
+        backgroundColor: isLight ? '#f4f6f8' : '#121212', // sidebar bg
+        transition: 'background-color 0.3s ease, color 0.3s ease', // smooth theme change
       }}
     >
       {/* Header */}
       <Toolbar>
         <Box sx={{ fontWeight: 'bold', fontSize: 18, color: theme.palette.primary.main }}>
-          SkillSwap
+          SkillSwap {/* app name */}
         </Box>
       </Toolbar>
-      <Divider />
+      <Divider /> {/* header divider */}
 
-      {/* Navigation */}
+      {/* Navigation items */}
       <List>
         {navItems.map(({ text, path, icon: Icon }) => {
-          const isActive = location.pathname === path;
+          const isActive = location.pathname === path; // active route
           return (
-            <ListItem key={text} disablePadding>
+            <ListItem key={text} disablePadding> {/* menu item */}
               <ListItemButton
                 component={Link}
-                to={path}
-                selected={isActive}
+                to={path} // navigation link
+                selected={isActive} // highlight active
                 sx={{
                   color: isActive
                     ? theme.palette.primary.main
@@ -64,7 +64,7 @@ export default function SideBarContent() {
                   backgroundColor: isActive
                     ? (isLight ? '#e8f0fe' : '#1e2a3a')
                     : 'transparent',
-                  '&:hover': {
+                  '&:hover': { // hover effect
                     backgroundColor: isLight ? '#e3f2fd' : '#263238',
                     color: theme.palette.primary.main,
                   },
@@ -81,26 +81,26 @@ export default function SideBarContent() {
                     minWidth: 40,
                   }}
                 >
-                  <Icon />
+                  <Icon /> {/* menu icon */}
                 </ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemText primary={text} /> {/* menu text */}
               </ListItemButton>
             </ListItem>
           );
         })}
       </List>
 
-      <Box sx={{ flexGrow: 1 }} /> {/* Push logout to bottom */}
-      <Divider />
+      <Box sx={{ flexGrow: 1 }} /> {/* spacer to push logout down */}
+      <Divider /> {/* bottom divider */}
       <Box sx={{ p: 2 }}>
         <Button
           fullWidth
           variant="outlined"
           color="error"
-          startIcon={<LogoutIcon />}
-          onClick={handleLogout}
+          startIcon={<LogoutIcon />} // logout icon
+          onClick={handleLogout} // logout action
         >
-          Logout
+          Logout {/* logout text */}
         </Button>
       </Box>
     </Box>

@@ -39,7 +39,18 @@ const QUESTIONS = {
       options: ["JSON.stringify()", "JSON.parse()", "parseJSON()", "toObject()"],
       answer: "JSON.parse()",
     },
+    {
+      q: "Which function is used to delay execution?",
+      options: ["delay()", "wait()", "setTimeout()", "setInterval()"],
+      answer: "setTimeout()",
+    },
+    {
+      q: "Which of these is NOT a JavaScript data type?",
+      options: ["Undefined", "Boolean", "Float", "Symbol"],
+      answer: "Float",
+    },
   ],
+
   Python: [
     {
       q: "Which data type is immutable?",
@@ -56,7 +67,18 @@ const QUESTIONS = {
       options: ["//", "#", "/* */", "--"],
       answer: "#",
     },
+    {
+      q: "Which keyword is used to handle exceptions?",
+      options: ["try", "catch", "error", "handle"],
+      answer: "try",
+    },
+    {
+      q: "Which function is used to get user input?",
+      options: ["input()", "scan()", "read()", "get()"],
+      answer: "input()",
+    },
   ],
+
   Java: [
     {
       q: "Which keyword is used for inheritance?",
@@ -73,8 +95,75 @@ const QUESTIONS = {
       options: ["Stack", "Register", "Heap", "Method Area"],
       answer: "Heap",
     },
+    {
+      q: "Which keyword is used to create an object?",
+      options: ["class", "new", "object", "this"],
+      answer: "new",
+    },
+    {
+      q: "Which access modifier makes a member accessible everywhere?",
+      options: ["private", "protected", "default", "public"],
+      answer: "public",
+    },
+  ],
+
+  "C Programming": [
+    {
+      q: "Which function is the entry point of a C program?",
+      options: ["start()", "main()", "init()", "run()"],
+      answer: "main()",
+    },
+    {
+      q: "Which symbol is used to include header files?",
+      options: ["@", "#", "$", "&"],
+      answer: "#",
+    },
+    {
+      q: "Which data type is used to store a character?",
+      options: ["int", "char", "string", "float"],
+      answer: "char",
+    },
+    {
+      q: "Which operator is used to access value via pointer?",
+      options: ["&", "*", "->", "%"],
+      answer: "*",
+    },
+    {
+      q: "Which loop is guaranteed to execute at least once?",
+      options: ["for", "while", "do-while", "foreach"],
+      answer: "do-while",
+    },
+  ],
+
+  ".NET": [
+    {
+      q: "Which language is primarily used with .NET?",
+      options: ["Java", "Python", "C#", "PHP"],
+      answer: "C#",
+    },
+    {
+      q: "What is the base class of all .NET classes?",
+      options: ["System", "BaseObject", "Object", "System.Object"],
+      answer: "System.Object",
+    },
+    {
+      q: "Which keyword is used for exception handling?",
+      options: ["try", "catch", "handle", "error"],
+      answer: "try",
+    },
+    {
+      q: "Which framework is used to build web apps in .NET?",
+      options: ["Spring", "Django", "ASP.NET", "Laravel"],
+      answer: "ASP.NET",
+    },
+    {
+      q: "Which file extension is used for C# source files?",
+      options: [".java", ".cs", ".net", ".csharp"],
+      answer: ".cs",
+    },
   ],
 };
+
 
 export default function AddSkillAssessment({ open, onClose, onSkillAdded, excludeSkillIds = [] }) {
   const { user } = useAuth();
@@ -140,8 +229,7 @@ export default function AddSkillAssessment({ open, onClose, onSkillAdded, exclud
 
     if (percent < 40) return "BEGINNER";
     if (percent < 70) return "INTERMEDIATE";
-    if (percent < 90) return "ADVANCED";
-    return "EXPERT";
+    return "ADVANCED";
   };
 
   const handleSubmit = async () => {
