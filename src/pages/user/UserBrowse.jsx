@@ -62,7 +62,7 @@ export default function UserBrowse() {
   });
   const [cancelling, setCancelling] = useState(false);
 
-  const categories = ["Python", "JavaScript", "Java"];
+  const categories = ["C Programming", "JavaScript", "Java", ".NET", "Python"];
 
   /* ================= FETCH DATA ================= */
   useEffect(() => {
