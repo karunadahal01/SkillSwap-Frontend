@@ -111,3 +111,24 @@ export async function verifyResetCode(payload) {
     };
   }
 }
+
+
+export async function changePassword(payload) {
+  try {
+    const res = await api.put("/api/auth/change-password", payload);
+
+    if (res.data?.success) {
+      return { ok: true, message: res.data.message };
+    }
+
+    return { ok: false, message: res.data?.message || "Password change failed" };
+  } catch (err) {
+    return {
+      ok: false,
+      message:
+        err.response?.data?.message ||
+        err.message ||
+        "Password change request failed",
+    };
+  }
+}
