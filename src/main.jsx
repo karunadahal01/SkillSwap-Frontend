@@ -6,6 +6,7 @@ import { ThemeModeProvider } from './context/ThemeModeContext';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast'; 
+import { ChatProvider } from '@context/Chatcontext';
 import { SwapProvider } from "@context/SwapContext";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -13,19 +14,21 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <ThemeModeProvider>
       <BrowserRouter>
         <AuthProvider>
-          <SwapProvider>
-            <App />
-            <Toaster
-              position="top-center"
-              toastOptions={{
-                style: {
-                  borderRadius: '8px',
-                  background: '#333',
-                  color: '#fff',
-                },
-              }}
-            />
-          </SwapProvider>
+          <ChatProvider>
+            <SwapProvider>
+              <App />
+              <Toaster
+                position="top-center"
+                toastOptions={{
+                  style: {
+                    borderRadius: '8px',
+                    background: '#333',
+                    color: '#fff',
+                  },
+                }}
+              />
+            </SwapProvider>
+          </ChatProvider>
         </AuthProvider>
       </BrowserRouter>
     </ThemeModeProvider>

@@ -5,6 +5,12 @@ export const getProfile = async () => {
   return axios.get("/api/profile/me");
 };
 
+// 🔹 OTHER user's profile (FOR CHAT, BROWSE, ETC.)
+export const getProfileByUserId = async (userId) => {
+  const res = await axios.get(`/api/profile/user/${userId}`);
+  return res.data?.data;
+};
+
 export const updateProfile = async (data) => {
   return axios.put("/api/profile/me", data);
 };
