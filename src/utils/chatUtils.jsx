@@ -292,111 +292,244 @@
 // }
 
 
+// // src/utils/chatUtils.jsx
+// import React from "react";
+// import { Box, Typography } from "@mui/material";
+
+// export function renderMessageContent(msg, onFileClick) {
+//   // Handle text messages
+//   if (msg.type === "text" || (!msg.type && msg.content)) {
+//     return <Typography>{msg.content}</Typography>;
+//   }
+
+//   // Handle file messages
+//   if (msg.type === "file" && msg.files && msg.files.length > 0) {
+//     return (
+//       <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+//         {/* Show text if present */}
+//         {msg.content && (
+//           <Typography sx={{ mb: 1, px: 1.5, pt: 1.5 }}>{msg.content}</Typography>
+//         )}
+
+//         {/* Show files */}
+//         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, p: msg.content ? 1 : 0 }}>
+//           {msg.files.map((file, idx) => {
+//             const isImg = /\.(jpeg|jpg|gif|png|webp|bmp)$/i.test(file.fileName);
+//             const isVid = /\.(mp4|webm|ogg|mov|m4v)$/i.test(file.fileName);
+
+//             if (isImg) {
+//               // Image rendering
+//               return (
+//                 <Box
+//                   key={idx}
+//                   sx={{
+//                     width: msg.files.length === 1 ? 280 : 140,
+//                     height: msg.files.length === 1 ? 280 : 140,
+//                     borderRadius: 2,
+//                     overflow: "hidden",
+//                     boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+//                     bgcolor: "background.paper",
+//                     cursor: "pointer",
+//                   }}
+//                   onClick={(e) => {
+//                     e.stopPropagation();
+//                     if (onFileClick) onFileClick(file.fileURL);
+//                   }}
+//                 >
+//                   <img
+//                     src={file.fileURL}
+//                     alt=""
+//                     style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+//                   />
+//                 </Box>
+//               );
+//             }
+
+//             if (isVid) {
+//               // Video rendering
+//               return (
+//                 <Box
+//                   key={idx}
+//                   onClick={(e) => e.stopPropagation()}
+//                   sx={{
+//                     width: msg.files.length === 1 ? 280 : 140,
+//                     borderRadius: 2,
+//                     overflow: "hidden",
+//                     boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+//                     bgcolor: "#000",
+//                   }}
+//                 >
+//                   <video
+//                     src={file.fileURL}
+//                     controls
+//                     style={{
+//                       width: "100%",
+//                       height: "auto",
+//                       display: "block",
+//                       maxHeight: msg.files.length === 1 ? "400px" : "200px",
+//                     }}
+//                   />
+//                 </Box>
+//               );
+//             }
+
+//             // Other files
+//             return (
+//               <Box
+//                 key={idx}
+//                 sx={{
+//                   width: msg.files.length === 1 ? 280 : 140,
+//                   height: msg.files.length === 1 ? 280 : 140,
+//                   borderRadius: 2,
+//                   overflow: "hidden",
+//                   boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+//                   bgcolor: "rgba(0,0,0,0.05)",
+//                   display: "flex",
+//                   alignItems: "center",
+//                   justifyContent: "center",
+//                   p: 2,
+//                 }}
+//               >
+//                 <Typography
+//                   variant="caption"
+//                   sx={{ textAlign: "center", wordBreak: "break-word", color: "text.secondary" }}
+//                 >
+//                   📄 {file.fileName}
+//                 </Typography>
+//               </Box>
+//             );
+//           })}
+//         </Box>
+//       </Box>
+//     );
+//   }
+
+//   // Fallback
+//   return <Typography>{msg.content || "Message"}</Typography>;
+// }
+
+
+
+
 // src/utils/chatUtils.jsx
-import React from "react";
-import { Box, Typography } from "@mui/material";
+import React from 'react';
+import { Box, Typography, Link } from '@mui/material';
 
-export function renderMessageContent(msg, onFileClick) {
-  // Handle text messages
-  if (msg.type === "text" || (!msg.type && msg.content)) {
-    return <Typography>{msg.content}</Typography>;
-  }
+/**
+ * Detect URLs in text and convert to clickable links
+ */
+const detectLinks = (text) => {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const parts = text.split(urlRegex);
+  
+  return parts.map((part, index) => {
+    if (part.match(urlRegex)) {
+      return (
+        <Link
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          sx={{
+            color: 'inherit',
+            textDecoration: 'underline',
+            '&:hover': {
+              textDecoration: 'underline',
+              opacity: 0.8,
+            },
+          }}
+        >
+          {part}
+        </Link>
+      );
+    }
+    return part;
+  });
+};
 
+/**
+ * Render message content based on type
+ */
+export const renderMessageContent = (msg, setLightboxImage) => {
   // Handle file messages
-  if (msg.type === "file" && msg.files && msg.files.length > 0) {
+  if (msg.type === 'file' && msg.files?.length > 0) {
     return (
-      <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-        {/* Show text if present */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        {/* Show text content if exists */}
         {msg.content && (
-          <Typography sx={{ mb: 1, px: 1.5, pt: 1.5 }}>{msg.content}</Typography>
+          <Typography sx={{ mb: 1 }}>
+            {detectLinks(msg.content)}
+          </Typography>
         )}
-
-        {/* Show files */}
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, p: msg.content ? 1 : 0 }}>
+        
+        {/* Render files */}
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
           {msg.files.map((file, idx) => {
-            const isImg = /\.(jpeg|jpg|gif|png|webp|bmp)$/i.test(file.fileName);
-            const isVid = /\.(mp4|webm|ogg|mov|m4v)$/i.test(file.fileName);
+            const isImage = /image\/(jpeg|jpg|png|gif|webp|bmp)/i.test(file.mimeType);
+            const isVideo = /video\/(mp4|webm|ogg|mov|m4v)/i.test(file.mimeType);
 
-            if (isImg) {
-              // Image rendering
+            if (isImage) {
               return (
                 <Box
                   key={idx}
+                  onClick={() => setLightboxImage && setLightboxImage(file.fileURL)}
                   sx={{
-                    width: msg.files.length === 1 ? 280 : 140,
-                    height: msg.files.length === 1 ? 280 : 140,
+                    cursor: 'pointer',
                     borderRadius: 2,
-                    overflow: "hidden",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                    bgcolor: "background.paper",
-                    cursor: "pointer",
-                  }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (onFileClick) onFileClick(file.fileURL);
+                    overflow: 'hidden',
+                    maxWidth: 300,
+                    '&:hover': { opacity: 0.9 },
                   }}
                 >
                   <img
                     src={file.fileURL}
-                    alt=""
-                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    alt={file.fileName}
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
                   />
                 </Box>
               );
             }
 
-            if (isVid) {
-              // Video rendering
+            if (isVideo) {
               return (
                 <Box
                   key={idx}
-                  onClick={(e) => e.stopPropagation()}
                   sx={{
-                    width: msg.files.length === 1 ? 280 : 140,
                     borderRadius: 2,
-                    overflow: "hidden",
-                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                    bgcolor: "#000",
+                    overflow: 'hidden',
+                    maxWidth: 300,
                   }}
                 >
                   <video
                     src={file.fileURL}
                     controls
-                    style={{
-                      width: "100%",
-                      height: "auto",
-                      display: "block",
-                      maxHeight: msg.files.length === 1 ? "400px" : "200px",
-                    }}
+                    style={{ width: '100%', height: 'auto', display: 'block' }}
                   />
                 </Box>
               );
             }
 
-            // Other files
+            // Other file types - show as download link
             return (
-              <Box
+              <Link
                 key={idx}
+                href={file.fileURL}
+                download={file.fileName}
+                target="_blank"
+                rel="noopener noreferrer"
                 sx={{
-                  width: msg.files.length === 1 ? 280 : 140,
-                  height: msg.files.length === 1 ? 280 : 140,
-                  borderRadius: 2,
-                  overflow: "hidden",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                  bgcolor: "rgba(0,0,0,0.05)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  p: 2,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  p: 1,
+                  borderRadius: 1,
+                  bgcolor: 'rgba(0,0,0,0.05)',
+                  textDecoration: 'none',
+                  '&:hover': { bgcolor: 'rgba(0,0,0,0.1)' },
                 }}
               >
-                <Typography
-                  variant="caption"
-                  sx={{ textAlign: "center", wordBreak: "break-word", color: "text.secondary" }}
-                >
-                  📄 {file.fileName}
-                </Typography>
-              </Box>
+                📄 {file.fileName}
+              </Link>
             );
           })}
         </Box>
@@ -404,6 +537,10 @@ export function renderMessageContent(msg, onFileClick) {
     );
   }
 
-  // Fallback
-  return <Typography>{msg.content || "Message"}</Typography>;
-}
+  // Handle text messages with link detection
+  return (
+    <Typography>
+      {detectLinks(msg.content || '')}
+    </Typography>
+  );
+};

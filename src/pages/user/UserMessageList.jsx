@@ -537,6 +537,244 @@
 
 
 
+// // src/pages/user/UserMessageList.jsx
+// import React, { useEffect, useState } from 'react';
+// import {
+//   Box,
+//   List,
+//   ListItem,
+//   ListItemButton,
+//   ListItemAvatar,
+//   ListItemText,
+//   Avatar,
+//   Typography,
+//   Badge,
+//   CircularProgress,
+//   useTheme,
+// } from '@mui/material';
+// import { useNavigate } from 'react-router-dom';
+// import { useChat } from '@/context/ChatContext';
+// import { getProfileByUserId } from '@/services/profileService';
+
+// export default function UserMessageList() {
+//   const theme = useTheme();
+//   const navigate = useNavigate();
+//   const { chatUsers, fetchChatUsers, loading } = useChat();
+//   const [userProfiles, setUserProfiles] = useState({});
+//   const [loadingProfiles, setLoadingProfiles] = useState(false);
+
+//   useEffect(() => {
+//     fetchChatUsers();
+//   }, [fetchChatUsers]);
+
+//   // ✅ Fetch profile data for each chat user
+//   useEffect(() => {
+//     const fetchProfiles = async () => {
+//       if (!chatUsers.length) return;
+
+//       setLoadingProfiles(true);
+//       const profiles = {};
+
+//       try {
+//         await Promise.all(
+//           chatUsers.map(async (chatUser) => {
+//             try {
+//               const profile = await getProfileByUserId(chatUser.userId);
+//               profiles[chatUser.userId] = profile;
+//             } catch (error) {
+//               console.error(`Error fetching profile for user ${chatUser.userId}:`, error);
+//             }
+//           })
+//         );
+
+//         setUserProfiles(profiles);
+//       } catch (error) {
+//         console.error('Error fetching profiles:', error);
+//       } finally {
+//         setLoadingProfiles(false);
+//       }
+//     };
+
+//     fetchProfiles();
+//   }, [chatUsers]);
+
+//   const formatTime = (timestamp) => {
+//     if (!timestamp) return '';
+    
+//     const date = new Date(timestamp);
+//     const now = new Date();
+//     const diff = now - date;
+    
+//     // Less than 1 minute
+//     if (diff < 60000) return 'Just now';
+    
+//     // Less than 1 hour
+//     if (diff < 3600000) {
+//       const minutes = Math.floor(diff / 60000);
+//       return `${minutes}m ago`;
+//     }
+    
+//     // Less than 24 hours
+//     if (diff < 86400000) {
+//       const hours = Math.floor(diff / 3600000);
+//       return `${hours}h ago`;
+//     }
+    
+//     // Less than 7 days
+//     if (diff < 604800000) {
+//       const days = Math.floor(diff / 86400000);
+//       return `${days}d ago`;
+//     }
+    
+//     // Format as date
+//     return date.toLocaleDateString();
+//   };
+
+//   const getInitials = (name) => {
+//     if (!name) return '?';
+//     const parts = name.trim().split(' ');
+//     if (parts.length >= 2) {
+//       return (parts[0][0] + parts[1][0]).toUpperCase();
+//     }
+//     return name.substring(0, 2).toUpperCase();
+//   };
+
+//   if (loading && chatUsers.length === 0) {
+//     return (
+//       <Box
+//         sx={{
+//           display: 'flex',
+//           justifyContent: 'center',
+//           alignItems: 'center',
+//           height: '100vh',
+//           bgcolor: theme.palette.mode === 'dark' ? '#191818' : '#f4f6f8',
+//         }}
+//       >
+//         <CircularProgress />
+//       </Box>
+//     );
+//   }
+
+//   return (
+//     <Box
+//       sx={{
+//         height: '100vh',
+//         bgcolor: theme.palette.mode === 'dark' ? '#191818' : '#f4f6f8',
+//         pt: 8,
+//         pb: 8,
+//       }}
+//     >
+//       <Typography variant="h5" sx={{ px: 2, py: 2, fontWeight: 600 }}>
+//         Messages
+//       </Typography>
+
+//       {chatUsers.length === 0 ? (
+//         <Box sx={{ textAlign: 'center', py: 8 }}>
+//           <Typography variant="body1" color="text.secondary">
+//             No conversations yet
+//           </Typography>
+//           <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+//             Start chatting with other users to see them here
+//           </Typography>
+//         </Box>
+//       ) : (
+//         <List sx={{ px: 1 }}>
+//           {chatUsers.map((chatUser) => {
+//             const profile = userProfiles[chatUser.userId];
+            
+//             // ✅ Use fullName from profile, fallback to userName from chatUser
+//             const displayName = profile?.fullName || chatUser.userName || 'User';
+            
+//             // ✅ FIXED: Use avatarUrl (not profilePictureUrl)
+//             const avatarUrl = profile?.avatarUrl || null;
+
+//             console.log(`User ${chatUser.userId}:`, { profile, displayName, avatarUrl }); // Debug
+
+//             return (
+//               <ListItem key={chatUser.userId} disablePadding>
+//                 <ListItemButton
+//                   onClick={() => navigate(`/user/messages/${chatUser.userId}`)}
+//                   sx={{
+//                     borderRadius: 2,
+//                     mb: 0.5,
+//                     '&:hover': {
+//                       bgcolor: theme.palette.action.hover,
+//                     },
+//                   }}
+//                 >
+//                   <ListItemAvatar>
+//                     <Badge
+//                       color={chatUser.isOnline ? 'success' : 'default'}
+//                       variant="dot"
+//                       overlap="circular"
+//                       anchorOrigin={{
+//                         vertical: 'bottom',
+//                         horizontal: 'right',
+//                       }}
+//                     >
+//                       <Avatar
+//                         src={avatarUrl || undefined}
+//                         alt={displayName}
+//                         sx={{ width: 48, height: 48 }}
+//                       >
+//                         {getInitials(displayName)}
+//                       </Avatar>
+//                     </Badge>
+//                   </ListItemAvatar>
+
+//                   <ListItemText
+//                     primary={
+//                       <Typography variant="subtitle1" fontWeight={chatUser.unreadCount > 0 ? 600 : 400}>
+//                         {displayName}
+//                       </Typography>
+//                     }
+//                     secondary={
+//                       <Typography
+//                         variant="body2"
+//                         color="text.secondary"
+//                         sx={{
+//                           overflow: 'hidden',
+//                           textOverflow: 'ellipsis',
+//                           whiteSpace: 'nowrap',
+//                           fontWeight: chatUser.unreadCount > 0 ? 500 : 400,
+//                         }}
+//                       >
+//                         {chatUser.lastMessage || 'No messages yet'}
+//                       </Typography>
+//                     }
+//                   />
+
+//                   <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 0.5 }}>
+//                     <Typography variant="caption" color="text.secondary">
+//                       {formatTime(chatUser.lastMessageTime)}
+//                     </Typography>
+
+//                     {chatUser.unreadCount > 0 && (
+//                       <Badge
+//                         badgeContent={chatUser.unreadCount}
+//                         color="primary"
+//                         sx={{
+//                           '& .MuiBadge-badge': {
+//                             fontSize: '0.7rem',
+//                             height: 18,
+//                             minWidth: 18,
+//                           },
+//                         }}
+//                       />
+//                     )}
+//                   </Box>
+//                 </ListItemButton>
+//               </ListItem>
+//             );
+//           })}
+//         </List>
+//       )}
+//     </Box>
+//   );
+// }
+
+
+
 // src/pages/user/UserMessageList.jsx
 import React, { useEffect, useState } from 'react';
 import {
@@ -681,14 +919,8 @@ export default function UserMessageList() {
         <List sx={{ px: 1 }}>
           {chatUsers.map((chatUser) => {
             const profile = userProfiles[chatUser.userId];
-            
-            // ✅ Use fullName from profile, fallback to userName from chatUser
             const displayName = profile?.fullName || chatUser.userName || 'User';
-            
-            // ✅ FIXED: Use avatarUrl (not profilePictureUrl)
             const avatarUrl = profile?.avatarUrl || null;
-
-            console.log(`User ${chatUser.userId}:`, { profile, displayName, avatarUrl }); // Debug
 
             return (
               <ListItem key={chatUser.userId} disablePadding>
@@ -703,6 +935,7 @@ export default function UserMessageList() {
                   }}
                 >
                   <ListItemAvatar>
+                    {/* ✅ Show online status badge */}
                     <Badge
                       color={chatUser.isOnline ? 'success' : 'default'}
                       variant="dot"
@@ -711,6 +944,7 @@ export default function UserMessageList() {
                         vertical: 'bottom',
                         horizontal: 'right',
                       }}
+                      invisible={!chatUser.isOnline}
                     >
                       <Avatar
                         src={avatarUrl || undefined}
@@ -749,18 +983,25 @@ export default function UserMessageList() {
                       {formatTime(chatUser.lastMessageTime)}
                     </Typography>
 
+                    {/* ✅ Show unread count badge */}
                     {chatUser.unreadCount > 0 && (
-                      <Badge
-                        badgeContent={chatUser.unreadCount}
-                        color="primary"
+                      <Box
                         sx={{
-                          '& .MuiBadge-badge': {
-                            fontSize: '0.7rem',
-                            height: 18,
-                            minWidth: 18,
-                          },
+                          bgcolor: theme.palette.primary.main,
+                          color: '#fff',
+                          borderRadius: '50%',
+                          minWidth: 20,
+                          height: 20,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontSize: '0.7rem',
+                          fontWeight: 600,
+                          px: 0.5,
                         }}
-                      />
+                      >
+                        {chatUser.unreadCount}
+                      </Box>
                     )}
                   </Box>
                 </ListItemButton>
