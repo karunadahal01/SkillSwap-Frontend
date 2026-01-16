@@ -453,7 +453,7 @@ export default function UserMessages() {
       {/* FIXED HEADER */}
       <Box
         sx={{
-          height: '70px',
+          height: '100px',
           p: 2,
           display: 'flex',
           alignItems: 'center',
@@ -464,8 +464,9 @@ export default function UserMessages() {
           position: 'fixed',
           left: 0,
           right: 0,
-          marginTop: 2.8,
-          zIndex: 1300,
+          marginTop: -1,
+          zIndex: 1,
+          paddingTop: 7,
         }}
       >
         <ArrowBackIcon
@@ -489,7 +490,7 @@ export default function UserMessages() {
             </Avatar>
 
             <Box sx={{ flex: 1 }}>
-              <Typography variant="h6" fontWeight={600}>
+              <Typography fontSize={18} fontWeight={600}>
                 {displayName}
               </Typography>
               {isOnline && (
