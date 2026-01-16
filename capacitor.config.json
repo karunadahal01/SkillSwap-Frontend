@@ -11,10 +11,15 @@
   },
   "server": {
     "androidScheme": "https",
-    "cleartext": true
+    "cleartext": true,
+    "allowNavigation": [
+      "http://192.168.254.4:8080",
+      "ws://192.168.254.4:8080"
+    ]
   },
   "android": {
     "allowMixedContent": true,
-    "backButtonBehavior": "none"
+    "backButtonBehavior": "none",
+    "useLegacyBridge": false
   }
 }

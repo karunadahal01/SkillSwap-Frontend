@@ -66,38 +66,134 @@
 
 
 
+// // src/config/axios.js
+// import axios from 'axios';
+
+// const BASE_URL = 'http://192.168.1.75:8080'; // ✅ Your laptop IP
+
+// const api = axios.create({
+//   baseURL: BASE_URL,
+//   headers: {
+//     'Content-Type': 'application/json',
+//   },
+//   timeout: 30000, // 30 second timeout
+// });
+
+// // 🔹 Request interceptor: attach access token
+// api.interceptors.request.use(
+//   (config) => {
+//     const accessToken = localStorage.getItem('accessToken');
+//     if (accessToken) {
+//       config.headers.Authorization = `Bearer ${accessToken}`;
+//     }
+//     return config;
+//   },
+//   (error) => Promise.reject(error)
+// );
+
+// // 🔹 Response interceptor: Handle token refresh
+// api.interceptors.response.use(
+//   (response) => response,
+//   async (error) => {
+//     const originalRequest = error.config;
+
+//     // If 401 and we haven't retried yet
+//     if (error.response?.status === 401 && !originalRequest._retry) {
+//       originalRequest._retry = true;
+
+//       try {
+//         const refreshToken = localStorage.getItem('refreshToken');
+        
+//         if (refreshToken) {
+//           // Try to refresh the access token
+//           const response = await axios.post(
+//             `${BASE_URL}/api/auth/refresh`,
+//             { refreshToken }
+//           );
+
+//           // ✅ FIXED: Your backend returns { message, success, data: { accessToken, refreshToken } }
+//           const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data.data;
+          
+//           // Update both tokens
+//           localStorage.setItem('accessToken', newAccessToken);
+//           if (newRefreshToken) {
+//             localStorage.setItem('refreshToken', newRefreshToken);
+//           }
+
+//           // Retry the original request with new token
+//           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+//           return api(originalRequest);
+//         }
+//       } catch (refreshError) {
+//         // Refresh failed, clear storage and redirect to login
+//         localStorage.removeItem('accessToken');
+//         localStorage.removeItem('refreshToken');
+//         localStorage.removeItem('user'); // Also clear user data if you store it
+//         window.location.href = '/login';
+//         return Promise.reject(refreshError);
+//       }
+//     }
+
+//     return Promise.reject(error);
+//   }
+// );
+
+// export default api;
+
+
+
+
+
+
+
 // src/config/axios.js
 import axios from 'axios';
 
-const BASE_URL = 'http://192.168.1.75:8080'; // ✅ Your laptop IP
+// ✅ Use environment variable with fallback
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://192.168.1.75:8080';
+
+console.log('🌐 API Base URL:', BASE_URL);
 
 const api = axios.create({
   baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 30000, // 30 second timeout
+  timeout: 30000,
 });
 
-// 🔹 Request interceptor: attach access token
+// Request interceptor
 api.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem('accessToken');
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
+    
+    console.log('📤 API Request:', config.method?.toUpperCase(), config.url);
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => {
+    console.error('❌ Request error:', error);
+    return Promise.reject(error);
+  }
 );
 
-// 🔹 Response interceptor: Handle token refresh
+// Response interceptor
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log('✅ API Response:', response.config.url, response.status);
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 
-    // If 401 and we haven't retried yet
+    console.error('❌ API Error:', {
+      url: error.config?.url,
+      status: error.response?.status,
+      message: error.message,
+    });
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
@@ -105,30 +201,25 @@ api.interceptors.response.use(
         const refreshToken = localStorage.getItem('refreshToken');
         
         if (refreshToken) {
-          // Try to refresh the access token
           const response = await axios.post(
             `${BASE_URL}/api/auth/refresh`,
             { refreshToken }
           );
 
-          // ✅ FIXED: Your backend returns { message, success, data: { accessToken, refreshToken } }
-          const { accessToken: newAccessToken, refreshToken: newRefreshToken } = response.data.data;
+          const { accessToken: newAccessToken, refreshToken: newRefreshToken } = 
+            response.data.data;
           
-          // Update both tokens
           localStorage.setItem('accessToken', newAccessToken);
           if (newRefreshToken) {
             localStorage.setItem('refreshToken', newRefreshToken);
           }
 
-          // Retry the original request with new token
           originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
           return api(originalRequest);
         }
       } catch (refreshError) {
-        // Refresh failed, clear storage and redirect to login
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user'); // Also clear user data if you store it
+        console.error('❌ Token refresh failed:', refreshError);
+        localStorage.clear();
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }
@@ -137,5 +228,16 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+// ✅ Helper to get full URL for images
+export const getImageUrl = (path) => {
+  if (!path) return null;
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  // Remove leading slash if present
+  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+  return `${BASE_URL}/${cleanPath}`;
+};
 
 export default api;
