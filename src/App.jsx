@@ -17,6 +17,8 @@ import UserSwaps from '@pages/user/UserSwaps';
 import UserMessage from '@pages/user/UserMessage';
 import UserMessageList from '@pages/user/UserMessageList';
 import UserSettings from '@pages/user/UserSettings';
+import UserProfile from './pages/user/UserProfile';
+import OtherUsersProfile from './pages/user/OtherUsersProfile';
 
 // ---------------- Auth ----------------
 import Login from '@pages/Login';
@@ -69,6 +71,8 @@ function App() {
         <Route path="messages/:id" element={<UserMessage />} />
         <Route path="messages" element={<UserMessageList />} />
         <Route path="settings" element={<UserSettings />} />
+        <Route path="profile" element={<UserProfile />} />
+        <Route path='other-profile/:userId' element={<OtherUsersProfile />}/>
       </Route>
 
       {/* Default Redirect */}

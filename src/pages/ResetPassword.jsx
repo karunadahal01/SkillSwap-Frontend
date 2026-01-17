@@ -173,7 +173,7 @@ export default function ResetPassword() {
         display: "flex",
         position: "relative",
         overflow: "hidden",
-        background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+        background: "linear-gradient(to bottom right, #ffffffff, #325cb9ff)",
         "&::before": {
           content: '""',
           position: "absolute",
@@ -219,7 +219,7 @@ export default function ResetPassword() {
             sx={{
               p: { xs: 3, sm: 5 },
               borderRadius: 4,
-              background: theme => theme.palette.background.paper,
+              background: theme => theme.palette.background.auth,
               backdropFilter: "blur(20px)",
               boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
               border: "1px solid rgba(255, 255, 255, 0.2)",
@@ -247,7 +247,7 @@ export default function ResetPassword() {
                 variant="h4"
                 sx={{
                   fontWeight: 800,
-                  background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   mb: 1,
@@ -275,7 +275,7 @@ export default function ResetPassword() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Email sx={{ color: "#4facfe" }} />
+                      <Email sx={{ color: "#667eea" }} />
                     </InputAdornment>
                   ),
                 }}
@@ -284,10 +284,10 @@ export default function ResetPassword() {
                     borderRadius: 2,
                     transition: "all 0.3s ease",
                     "&:hover fieldset": {
-                      borderColor: "#4facfe",
+                      borderColor: "#667eea",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: "#4facfe",
+                      borderColor: "#667eea",
                       borderWidth: 2,
                     },
                   },
@@ -307,7 +307,7 @@ export default function ResetPassword() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <VpnKey sx={{ color: "#4facfe" }} />
+                      <VpnKey sx={{ color: "#667eea" }} />
                     </InputAdornment>
                   ),
                 }}
@@ -316,10 +316,10 @@ export default function ResetPassword() {
                     borderRadius: 2,
                     transition: "all 0.3s ease",
                     "&:hover fieldset": {
-                      borderColor: "#4facfe",
+                      borderColor: "#667eea",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: "#4facfe",
+                      borderColor: "#667eea",
                       borderWidth: 2,
                     },
                   },
@@ -339,7 +339,7 @@ export default function ResetPassword() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Lock sx={{ color: "#4facfe" }} />
+                      <Lock sx={{ color: "#667eea" }} />
                     </InputAdornment>
                   ),
                   endAdornment: (
@@ -359,10 +359,10 @@ export default function ResetPassword() {
                     borderRadius: 2,
                     transition: "all 0.3s ease",
                     "&:hover fieldset": {
-                      borderColor: "#4facfe",
+                      borderColor: "#667eea",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: "#4facfe",
+                      borderColor: "#667eea",
                       borderWidth: 2,
                     },
                   },
@@ -384,15 +384,15 @@ export default function ResetPassword() {
                   mt: 3,
                   py: 1.5,
                   borderRadius: 2,
-                  background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                   fontWeight: 700,
                   fontSize: "1rem",
                   textTransform: "none",
-                  boxShadow: "0 4px 20px rgba(79, 172, 254, 0.4)",
+                  boxShadow: "0 4px 20px rgba(102, 126, 234, 0.4)",
                   transition: "all 0.3s ease",
                   "&:hover": {
-                    background: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
-                    boxShadow: "0 6px 30px rgba(79, 172, 254, 0.6)",
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    boxShadow: "0 6px 30px rgba(102, 126, 234, 0.6)",
                     transform: "translateY(-2px)",
                   },
                   "&:disabled": {
@@ -409,7 +409,7 @@ export default function ResetPassword() {
                   <Link
                     to="/login"
                     style={{
-                      color: "#4facfe",
+                      color: "#667eea",
                       fontWeight: 700,
                       textDecoration: "none",
                     }}

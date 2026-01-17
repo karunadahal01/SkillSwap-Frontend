@@ -1078,7 +1078,7 @@ export default function UserSwaps() {
         background: isDark
           ? 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)'
           : 'linear-gradient(135deg, #f5f7fa 0%, #e8eef5 100%)',
-        py: 4,
+        py: 6,
         px: 2,
       }}
     >

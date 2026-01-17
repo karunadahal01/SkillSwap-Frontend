@@ -364,6 +364,7 @@ export default function UserTopBar() {
       position="fixed"
       elevation={0}
       sx={{
+        height: "env(safe-area-inset-top) + 70px",
         background:
           theme.palette.mode === "light"
             ? "linear-gradient(135deg, #092f64ff 0%, #5c07b1 100%)"
@@ -383,6 +384,7 @@ export default function UserTopBar() {
       {/* ✅ WIDTH CONSTRAINT WRAPPER (KEY FIX) */}
       <Box
         sx={{
+          paddingTop: "env(safe-area-inset-top)",
           maxWidth: "1280px",   // 🔒 constant width
           mx: "auto",
           width: "100%",
@@ -409,8 +411,8 @@ export default function UserTopBar() {
           >
             <Box
               sx={{
-                width: 160,     // 🔒 fixed logo size
-                height: 55,
+                width: 150,     // 🔒 fixed logo size
+                height: 45,
                 borderRadius: "14px",
                 overflow: "hidden",
                 mr: 2,
@@ -435,8 +437,8 @@ export default function UserTopBar() {
             <Box
               sx={{
                 background: "rgba(255, 255, 255, 0.15)",
-                borderRadius: "12px",
-                p: 0.5,
+                borderRadius: "20px",
+                p: 0,
                 backdropFilter: "blur(10px)",
                 border: `1px solid ${alpha("#fff", 0.1)}`,
               }}
@@ -447,8 +449,8 @@ export default function UserTopBar() {
             <Box
               sx={{
                 background: "rgba(255, 255, 255, 0.15)",
-                borderRadius: "12px",
-                p: 0.5,
+                borderRadius: "20px",
+                p: 0,
                 backdropFilter: "blur(10px)",
                 border: `1px solid ${alpha("#fff", 0.1)}`,
               }}
@@ -457,12 +459,12 @@ export default function UserTopBar() {
             </Box>
             <Box
               sx={{
-                ml: { xs: 0.5, sm: 1 },
+                ml: { xs: 0.5 },
                 position: "relative",
                 "&::before": {
                   content: '""',
                   position: "absolute",
-                  inset: -2,
+                  inset: 0,
                   borderRadius: "50%",
                   padding: "2px",
                   background:

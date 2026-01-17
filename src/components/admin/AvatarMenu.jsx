@@ -209,6 +209,7 @@
 
 // src/components/admin/AvatarMenu.jsx
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Avatar, IconButton, Menu, MenuItem, Typography, Box } from '@mui/material';
 import { useAuth } from '@context/AuthContext';
 import * as profileService from '@services/profileService';
@@ -223,6 +224,7 @@ export default function AvatarMenu({ onLogout }) {
   // Open/close menu
   const handleOpen = (e) => setAnchorEl(e.currentTarget);
   const handleClose = () => setAnchorEl(null);
+  const navigate = useNavigate();
 
   // Fetch profile on mount
   useEffect(() => {
@@ -271,11 +273,17 @@ export default function AvatarMenu({ onLogout }) {
         onClose={handleClose}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        sx={{
+          backgroundColor: 'palette.primary.main',
+        }}
       >
-        <Box sx={{ px: 2, py: 1 }}>
-          <Typography variant="subtitle1">{username || 'User'}</Typography>
+        {/* <Box sx={{ px: 2, py: 1 }} onClick={() => navigate('/user/profile')}>
+          <Typography variant="subtitle1">{username || 'User'} </Typography>
           <Typography variant="body2" color="text.secondary">{user?.email || 'No Email'}</Typography>
-        </Box>
+        </Box> */}
+        <MenuItem sx={{ px: 2, py: 1 }} onClick={() => { navigate('/user/profile'); handleClose(); }}>
+          View Profile
+        </MenuItem>
 
         <Box sx={{ borderTop: 1, borderColor: 'divider', my: 1 }} />
 

@@ -1759,7 +1759,7 @@ export default function UserMessageList() {
             <Typography variant="body2" color="text.secondary">
               {searchQuery
                 ? 'Try searching with different keywords'
-                : 'Start chatting with other users to see them here'}
+                : 'Swap with other users to start conversations after being matched'}
             </Typography>
           </Paper>
         ) : (
@@ -1825,6 +1825,7 @@ export default function UserMessageList() {
                           <Avatar
                             src={avatarUrl || undefined}
                             alt={displayName}
+                            onClick={() => navigate(`/user/other-profile/${chatUser.userId}`)}
                             sx={{
                               width: 56,
                               height: 56,

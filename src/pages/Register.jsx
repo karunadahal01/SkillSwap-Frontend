@@ -193,7 +193,7 @@ export default function Register() {
         display: 'flex',
         position: 'relative',
         overflow: 'hidden',
-        background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+        background: 'linear-gradient(to bottom right, #ffffffff, #325cb9ff)',
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -239,7 +239,7 @@ export default function Register() {
             sx={{
               p: { xs: 3, sm: 5 },
               borderRadius: 4,
-              background: theme => theme.palette.background.paper,
+              background: theme => theme.palette.background.auth,
               backdropFilter: 'blur(20px)',
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
               border: '1px solid rgba(255, 255, 255, 0.2)',
@@ -267,7 +267,8 @@ export default function Register() {
                 variant="h4"
                 sx={{
                   fontWeight: 800,
-                  background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  // background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   mb: 1,
@@ -293,7 +294,7 @@ export default function Register() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Person sx={{ color: '#f5576c' }} />
+                      <Person sx={{ color: '#667eea' }} />
                     </InputAdornment>
                   ),
                 }}
@@ -302,10 +303,10 @@ export default function Register() {
                     borderRadius: 2,
                     transition: 'all 0.3s ease',
                     '&:hover fieldset': {
-                      borderColor: '#f5576c',
+                      borderColor: '#667eea',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#f5576c',
+                      borderColor: '#667eea',
                       borderWidth: 2,
                     },
                   },
@@ -323,7 +324,7 @@ export default function Register() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Email sx={{ color: '#f5576c' }} />
+                      <Email sx={{ color: '#667eea' }} />
                     </InputAdornment>
                   ),
                 }}
@@ -332,10 +333,10 @@ export default function Register() {
                     borderRadius: 2,
                     transition: 'all 0.3s ease',
                     '&:hover fieldset': {
-                      borderColor: '#f5576c',
+                      borderColor: '#667eea',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#f5576c',
+                      borderColor: '#667eea',
                       borderWidth: 2,
                     },
                   },
@@ -354,7 +355,7 @@ export default function Register() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Lock sx={{ color: '#f5576c' }} />
+                      <Lock sx={{ color: '#667eea' }} />
                     </InputAdornment>
                   ),
                   endAdornment: (
@@ -374,10 +375,10 @@ export default function Register() {
                     borderRadius: 2,
                     transition: 'all 0.3s ease',
                     '&:hover fieldset': {
-                      borderColor: '#f5576c',
+                      borderColor: '#667eea',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#f5576c',
+                      borderColor: '#667eea',
                       borderWidth: 2,
                     },
                   },
@@ -396,7 +397,7 @@ export default function Register() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Lock sx={{ color: '#f5576c' }} />
+                      <Lock sx={{ color: '#667eea' }} />
                     </InputAdornment>
                   ),
                   endAdornment: (
@@ -416,10 +417,10 @@ export default function Register() {
                     borderRadius: 2,
                     transition: 'all 0.3s ease',
                     '&:hover fieldset': {
-                      borderColor: '#f5576c',
+                      borderColor: '#667eea',
                     },
                     '&.Mui-focused fieldset': {
-                      borderColor: '#f5576c',
+                      borderColor: '#667eea',
                       borderWidth: 2,
                     },
                   },
@@ -436,15 +437,15 @@ export default function Register() {
                   mt: 3,
                   py: 1.5,
                   borderRadius: 2,
-                  background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                   fontWeight: 700,
                   fontSize: '1rem',
                   textTransform: 'none',
-                  boxShadow: '0 4px 20px rgba(245, 87, 108, 0.4)',
+                  boxShadow: '0 4px 20px rgba(102, 126, 234, 0.4)',
                   transition: 'all 0.3s ease',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                    boxShadow: '0 6px 30px rgba(245, 87, 108, 0.6)',
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    boxShadow: '0 6px 30px rgba(102, 126, 234, 0.6)',
                     transform: 'translateY(-2px)',
                   },
                   '&:disabled': {
@@ -461,7 +462,7 @@ export default function Register() {
                   <Link
                     to="/login"
                     style={{
-                      color: '#f5576c',
+                      color: '#667eea',
                       fontWeight: 700,
                       textDecoration: 'none',
                     }}

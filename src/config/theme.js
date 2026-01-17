@@ -13,7 +13,7 @@ export default function getDesignTokens(mode = 'light') {
       background: {
         default: isLight ? '#f4f6f8' : '#191818ff',
         paper: isLight ? '#ffffff' : '#1e1e1e',
-        auth: isLight ? '#ffffff' : '#000000',
+        auth: isLight ? '#ffffff' : '#262626',
       },
       text: {
         primary: isLight ? '#000000ff' : '#eaeaea',

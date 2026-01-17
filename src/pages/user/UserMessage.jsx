@@ -484,7 +484,8 @@ export default function UserMessages() {
             <Avatar
               src={avatarUrl || undefined}
               sx={{ width: 32, height: 32, cursor: 'pointer' }}
-              onClick={() => navigate(`/user/profile/${userId}`)}
+              // onClick={() => navigate(`/user/profile`)}
+              onClick={() => navigate(`/user/other-profile/${userId}`)}
             >
               {getInitials(displayName)}
             </Avatar>

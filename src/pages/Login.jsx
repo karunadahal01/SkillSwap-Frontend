@@ -190,7 +190,7 @@ export default function Login() {
         display: 'flex',
         position: 'relative',
         overflow: 'hidden',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: 'linear-gradient(to bottom right, #ffffffff, #325cb9ff)',
         '&::before': {
           content: '""',
           position: 'absolute',
@@ -236,7 +236,7 @@ export default function Login() {
             sx={{
               p: { xs: 3, sm: 5 },
               borderRadius: 4,
-              background: theme => theme.palette.background.paper,
+              background: theme => theme.palette.background.auth,
               backdropFilter: 'blur(20px)',
               boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
               border: '1px solid rgba(255, 255, 255, 0.2)',

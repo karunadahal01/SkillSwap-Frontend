@@ -178,7 +178,7 @@ export default function ForgotPassword() {
         display: "flex",
         position: "relative",
         overflow: "hidden",
-        background: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+        background: "linear-gradient(to bottom right, #ffffffff, #325cb9ff)",
         "&::before": {
           content: '""',
           position: "absolute",
@@ -187,7 +187,7 @@ export default function ForgotPassword() {
           width: "500px",
           height: "500px",
           borderRadius: "50%",
-          background: "rgba(255, 255, 255, 0.2)",
+          background: "rgba(255, 255, 255, 0.1)",
           animation: "drift 8s ease-in-out infinite",
         },
         "&::after": {
@@ -198,7 +198,7 @@ export default function ForgotPassword() {
           width: "400px",
           height: "400px",
           borderRadius: "50%",
-          background: "rgba(255, 255, 255, 0.15)",
+          background: "rgba(255, 255, 255, 0.08)",
           animation: "drift 10s ease-in-out infinite reverse",
         },
         "@keyframes drift": {
@@ -224,7 +224,7 @@ export default function ForgotPassword() {
             sx={{
               p: { xs: 3, sm: 5 },
               borderRadius: 4,
-              background: theme => theme.palette.background.paper,
+              background: theme => theme.palette.background.auth,
               backdropFilter: "blur(20px)",
               boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
               border: "1px solid rgba(255, 255, 255, 0.2)",
@@ -252,7 +252,7 @@ export default function ForgotPassword() {
                 variant="h4"
                 sx={{
                   fontWeight: 800,
-                  background: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   mb: 1,
@@ -280,7 +280,7 @@ export default function ForgotPassword() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Email sx={{ color: "#fcb69f" }} />
+                      <Email sx={{ color: "#667eea" }} />
                     </InputAdornment>
                   ),
                 }}
@@ -289,10 +289,10 @@ export default function ForgotPassword() {
                     borderRadius: 2,
                     transition: "all 0.3s ease",
                     "&:hover fieldset": {
-                      borderColor: "#fcb69f",
+                      borderColor: "#667eea",
                     },
                     "&.Mui-focused fieldset": {
-                      borderColor: "#fcb69f",
+                      borderColor: "#667eea",
                       borderWidth: 2,
                     },
                   },
@@ -308,16 +308,15 @@ export default function ForgotPassword() {
                   mt: 3,
                   py: 1.5,
                   borderRadius: 2,
-                  background: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
-                  color: "#333",
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                   fontWeight: 700,
                   fontSize: "1rem",
                   textTransform: "none",
-                  boxShadow: "0 4px 20px rgba(252, 182, 159, 0.4)",
+                  boxShadow: "0 4px 20px rgba(102, 126, 234, 0.4)",
                   transition: "all 0.3s ease",
                   "&:hover": {
-                    background: "linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)",
-                    boxShadow: "0 6px 30px rgba(252, 182, 159, 0.6)",
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    boxShadow: "0 6px 30px rgba(102, 126, 234, 0.6)",
                     transform: "translateY(-2px)",
                   },
                   "&:disabled": {
@@ -335,7 +334,7 @@ export default function ForgotPassword() {
                   <Link
                     to="/login"
                     style={{
-                      color: "#fcb69f",
+                      color: "#667eea",
                       fontWeight: 700,
                       textDecoration: "none",
                     }}
