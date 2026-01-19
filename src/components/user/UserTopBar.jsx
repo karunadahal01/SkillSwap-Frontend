@@ -8,7 +8,7 @@ import {
   alpha,
 } from "@mui/material";
 import NotificationMenu from "@components/admin/NotificationMenu";
-import AvatarMenu from "@components/admin/AvatarMenu";
+import AvatarMenu from "@components/user/AvatarMenu";
 import ThemeToggle from "@components/admin/ThemeToggle";
 import Logo from "@assets/skillswap-logo.png";
 import { useNavigate } from "react-router-dom";
@@ -69,8 +69,8 @@ export default function UserTopBar() {
           >
             <Box
               sx={{
-                width: 150,     // 🔒 fixed logo size
-                height: 45,
+                width: 130,     // 🔒 fixed logo size
+                height: 40,
                 borderRadius: "14px",
                 overflow: "hidden",
                 mr: 2,
@@ -102,18 +102,6 @@ export default function UserTopBar() {
               }}
             >
               <NotificationMenu />
-            </Box>
-
-            <Box
-              sx={{
-                background: "rgba(255, 255, 255, 0.15)",
-                borderRadius: "20px",
-                p: 0,
-                backdropFilter: "blur(10px)",
-                border: `1px solid ${alpha("#fff", 0.1)}`,
-              }}
-            >
-              <ThemeToggle />
             </Box>
             <Box
               sx={{

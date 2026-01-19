@@ -69,7 +69,7 @@ export default function AvatarMenu({ onLogout }) {
           <Typography variant="subtitle1">{username || 'User'} </Typography>
           <Typography variant="body2" color="text.secondary">{user?.email || 'No Email'}</Typography>
         </Box> */}
-        <MenuItem sx={{ px: 2, py: 1 }} onClick={() => { navigate('/admin/profile'); handleClose(); }}>
+        <MenuItem sx={{ px: 2, py: 1 }} onClick={() => { navigate('/user/profile'); handleClose(); }}>
           View Profile
         </MenuItem>
 

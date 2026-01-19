@@ -6,6 +6,7 @@ import ProtectedRoute from '@components/ProtectedRoute';
 import AdminLayout from './templates/AdminLayout';
 import AdminDashboard from '@pages/admin/AdminDashboard';
 import Users from '@pages/admin/Users';
+import AdminProfile from './pages/admin/AdminProfile';
 import AdminSettings from '@pages/admin/Settings';
 
 // ---------------- User ----------------
@@ -52,6 +53,7 @@ function App() {
       >
         <Route index element={<AdminDashboard />} />
         <Route path="users" element={<Users />} />
+        <Route path="profile" element={<AdminProfile />} />
         <Route path="settings" element={<AdminSettings />} />
       </Route>
 
