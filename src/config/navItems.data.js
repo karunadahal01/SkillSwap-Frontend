@@ -8,6 +8,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 const navItems = [
   { text: 'Dashboard', path: '/admin', icon: DashboardIcon },
   { text: 'Users', path: '/admin/users', icon: PeopleIcon },
+  { text: 'Skills', path: '/admin/skills', icon: SchoolIcon },
   { text: 'Settings', path: '/admin/settings', icon: SettingsIcon },
 ];
 

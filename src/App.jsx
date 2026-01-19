@@ -8,6 +8,7 @@ import AdminDashboard from '@pages/admin/AdminDashboard';
 import Users from '@pages/admin/Users';
 import AdminProfile from './pages/admin/AdminProfile';
 import AdminSettings from '@pages/admin/Settings';
+import Skills from '@pages/admin/Skills';
 
 // ---------------- User ----------------
 import UserLayout from './templates/UserLayout';
@@ -55,6 +56,7 @@ function App() {
         <Route path="users" element={<Users />} />
         <Route path="profile" element={<AdminProfile />} />
         <Route path="settings" element={<AdminSettings />} />
+        <Route path="skills" element={<Skills />} />
       </Route>
 
       {/* Protected User Routes */}

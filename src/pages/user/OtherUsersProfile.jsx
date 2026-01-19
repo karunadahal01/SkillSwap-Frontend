@@ -1308,6 +1308,7 @@ export default function OtherUsersProfile() {
             <Paper
               elevation={0}
               sx={{
+                width: 370,
                 p: { xs: 2.5, sm: 3 },
                 borderRadius: { xs: 2, md: 3 },
                 background: isDark ? '#1e1e2e' : '#ffffff',
@@ -1380,7 +1381,7 @@ export default function OtherUsersProfile() {
               elevation={0}
               sx={{
                 p: { xs: 2.5, sm: 3 },
-                width: 'auto',
+                width: 370,
                 borderRadius: { xs: 2, md: 3 },
                 background: isDark ? '#1e1e2e' : '#ffffff',
                 border: `1px solid ${isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)'}`,
