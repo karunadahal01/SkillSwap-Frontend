@@ -1809,7 +1809,7 @@ export default function AdminDashboard() {
             <Paper
               elevation={0}
               sx={{
-                width: 400,
+                width: 410,
                 p: { xs: 2.5, sm: 3 },
                 borderRadius: { xs: 2, md: 3 },
                 background: isDark ? '#1e1e2e' : '#ffffff',
@@ -1898,7 +1898,7 @@ export default function AdminDashboard() {
                 direction="row"
                 alignItems="center"
                 spacing={1.5}
-                sx={{ mb: 3 }}
+                sx={{ mb: 6 }}
               >
                 <Box
                   sx={{
@@ -2017,9 +2017,6 @@ export default function AdminDashboard() {
               </Stack>
             </Paper>
           </Grid>
-
-          {/* Checkpoint 1 */}
-
           {/* Recent Users */}
           <Grid item xs={12} lg={6}>
             <Paper
@@ -2252,8 +2249,6 @@ export default function AdminDashboard() {
               )}
             </Paper>
           </Grid>
-
-{/* Checkpoint 2 */}
         </Grid>
       </Box>
     </Box>

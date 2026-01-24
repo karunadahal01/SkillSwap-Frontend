@@ -8,6 +8,7 @@ import {
   ListItemAvatar,
   ListItemText,
   Avatar,
+  IconButton,
   Typography,
   Badge,
   CircularProgress,
@@ -23,10 +24,12 @@ import {
   Message,
   CircleOutlined,
   CheckCircle,
+  Refresh as RefreshIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useChat } from '@/context/ChatContext';
 import { getProfileByUserId } from '@/services/profileService';
+import toast from 'react-hot-toast';
 
 const HEADER_HEIGHT = 180;
 
@@ -34,6 +37,7 @@ export default function UserMessageList() {
   const theme = useTheme();
   const navigate = useNavigate();
   const { chatUsers, fetchChatUsers, loading } = useChat();
+  const [refreshing, setRefreshing] = useState(false);
   const [userProfiles, setUserProfiles] = useState({});
   const [loadingProfiles, setLoadingProfiles] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -82,6 +86,13 @@ export default function UserMessageList() {
 
     return date.toLocaleDateString();
   };
+
+  const handleRefresh = async () => {
+  setRefreshing(true);
+  await fetchChatUsers();
+  setRefreshing(false);
+  toast.success('Message list refreshed', 'success');
+};
 
   const getInitials = (name) => {
     if (!name) return '?';
@@ -169,6 +180,23 @@ export default function UserMessageList() {
               }}
             />
           )}
+
+                        <IconButton
+                onClick={handleRefresh}
+                disabled={refreshing}
+                sx={{
+                  ml:10,
+                  color: 'white',
+                  bgcolor: 'rgba(255,255,255,0.1)',
+                  '&:hover': {
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                    transform: 'rotate(180deg)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                <RefreshIcon />
+              </IconButton>
         </Box>
 
         {/* Search Bar */}

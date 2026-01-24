@@ -35,7 +35,7 @@ export default function SideBarContent() {
         display: 'flex',
         flexDirection: 'column',
         height: '100%',
-        backgroundColor: isLight ? '#f4f6f8' : '#121212', // sidebar bg
+        backgroundColor: isLight ? '#f4f6f8' : '#1a1a2e', // sidebar bg
         transition: 'background-color 0.3s ease, color 0.3s ease', // smooth theme change
       }}
     >

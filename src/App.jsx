@@ -16,6 +16,7 @@ import UserHome from '@pages/user/UserHome';
 import UserBrowse from '@pages/user/UserBrowse';
 import UserListing from '@pages/user/UserListing';
 import UserSwaps from '@pages/user/UserSwaps';
+import UserNotification from '@pages/user/UserNotification';
 import UserMessage from '@pages/user/UserMessage';
 import UserMessageList from '@pages/user/UserMessageList';
 import UserSettings from '@pages/user/UserSettings';
@@ -72,6 +73,7 @@ function App() {
         <Route path="browse" element={<UserBrowse />} />
         <Route path="listings" element={<UserListing />} />
         <Route path="swaps" element={<UserSwaps />} />
+        <Route path="notifications" element={<UserNotification />} />
         <Route path="messages/:id" element={<UserMessage />} />
         <Route path="messages" element={<UserMessageList />} />
         <Route path="settings" element={<UserSettings />} />

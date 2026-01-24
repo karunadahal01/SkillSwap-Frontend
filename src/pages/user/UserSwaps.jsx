@@ -925,6 +925,7 @@ import {
   MenuItem,
   Snackbar,
   Alert,
+  IconButton,
   Pagination,
   CircularProgress,
   Stack,
@@ -943,6 +944,7 @@ import {
   Block,
   CallReceived,
   CallMade,
+  Refresh as RefreshIcon,
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import {
@@ -988,6 +990,7 @@ export default function UserSwaps() {
   const isDark = theme.palette.mode === 'dark';
 
   const [swaps, setSwaps] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState("all");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -1014,6 +1017,13 @@ export default function UserSwaps() {
   useEffect(() => {
     fetchSwaps();
   }, []);
+
+  const handleRefresh = async () => {
+  setRefreshing(true);
+  await fetchSwaps();
+  setRefreshing(false);
+  pushSnackbar('Swaps refreshed', 'success');
+};
 
   const fetchSwaps = async () => {
     try {
@@ -1266,23 +1276,44 @@ export default function UserSwaps() {
             color: 'white',
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 }, flexWrap: 'wrap' }}>
-            <SwapHoriz sx={{ fontSize: { xs: 28, sm: 32 } }} />
-            <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: "1.5rem", sm: "1.75rem", md: "2.125rem" } }}>
-              My Swaps
-            </Typography>
-            {swaps.length > 0 && (
-              <Chip
-                label={swaps.length}
-                sx={{
+          <Stack
+            direction="row"
+            alignItems="center"
+            justifyContent="space-between"
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 }, flexWrap: 'wrap' }}>
+              <SwapHoriz sx={{ fontSize: { xs: 28, sm: 32 } }} />
+              <Typography variant="h4" fontWeight={700} sx={{ fontSize: { xs: "1.5rem", sm: "1.75rem", md: "2.125rem" } }}>
+                My Swaps
+              </Typography>
+              {swaps.length > 0 && (
+                <Chip
+                  label={swaps.length}
+                  sx={{
+                    bgcolor: 'rgba(255,255,255,0.2)',
+                    color: 'white',
+                    fontWeight: 600,
+                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                  }}
+                />
+              )}
+            </Box>
+            <IconButton
+              onClick={handleRefresh}
+              disabled={refreshing}
+              sx={{
+                color: 'white',
+                bgcolor: 'rgba(255,255,255,0.1)',
+                '&:hover': {
                   bgcolor: 'rgba(255,255,255,0.2)',
-                  color: 'white',
-                  fontWeight: 600,
-                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                }}
-              />
-            )}
-          </Box>
+                  transform: 'rotate(180deg)',
+                },
+                transition: 'all 0.3s ease',
+              }}
+            >
+              <RefreshIcon />
+            </IconButton>
+          </Stack>
         </Paper>
 
         {/* Controls */}
