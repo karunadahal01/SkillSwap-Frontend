@@ -792,6 +792,7 @@ export default function NotificationMenu() {
           onClick={handleViewAll}
           sx={{
             py: 2,
+            mb: -1,
             justifyContent: 'center',
             background: isDark
               ? 'rgba(102, 126, 234, 0.05)'
