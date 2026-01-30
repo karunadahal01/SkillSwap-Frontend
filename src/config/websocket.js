@@ -1,8 +1,6 @@
-// src/config/websocket.js
-// Alternative version using native WebSocket (no SockJS dependency)
+// src/config/websocket.js - CORRECT SUBSCRIPTION FIX
 import { Client } from '@stomp/stompjs';
 
-// ✅ Use environment variable, fallback to your IP
 const WS_URL = import.meta.env.VITE_WS_URL || 'http://192.168.1.75:8080/ws';
 
 class WebSocketService {
@@ -21,7 +19,6 @@ class WebSocketService {
         return;
       }
 
-      // Convert http:// to ws:// or https:// to wss://
       const wsUrl = WS_URL.replace(/^http/, 'ws');
 
       this.client = new Client({
@@ -77,52 +74,78 @@ class WebSocketService {
 
   /**
    * Subscribe to user's private message queue
-   * @param {number} userId - Current user's ID
-   * @param {Function} onMessage - Callback when message received
+   * ✅ CRITICAL FIX: Subscribe to /user/queue/messages (Spring will route to correct session)
    */
-  subscribeToMessages(userId, onMessage) {
+  subscribeToMessages(userEmail, onMessage) {
     if (!this.connected) {
       console.error('❌ WebSocket not connected');
       return;
     }
 
-    const destination = `/user/${userId}/queue/messages`;
+    // ✅ CRITICAL: Use /user/queue/messages WITHOUT the email
+    // Spring will automatically route this to the correct session-specific destination
+    const destination = `/user/queue/messages`;
+    
+    console.log('========================================');
+    console.log('📡 SUBSCRIBING TO MESSAGES');
+    console.log('   User Email:', userEmail);
+    console.log('   Subscription Destination:', destination);
+    console.log('   Spring will route to: /queue/messages-user[SESSION_ID]');
+    console.log('========================================');
     
     const subscription = this.client.subscribe(destination, (message) => {
+      console.log('========================================');
+      console.log('📨 RAW WEBSOCKET MESSAGE RECEIVED');
+      console.log('   Destination:', message.headers.destination);
+      console.log('   Message ID:', message.headers['message-id']);
+      console.log('   Subscription:', message.headers.subscription);
+      console.log('========================================');
+      
       try {
         const data = JSON.parse(message.body);
-        console.log('📨 New message received:', data);
+        console.log('✅ Parsed message data:', data);
         onMessage(data);
       } catch (error) {
-        console.error('Error parsing message:', error);
+        console.error('❌ Error parsing message:', error);
+        console.error('   Raw body:', message.body);
       }
     });
 
     this.subscriptions.set('messages', subscription);
     this.messageHandlers.set('messages', onMessage);
-    console.log(`✅ Subscribed to messages: ${destination}`);
+    console.log(`✅ Subscribed successfully to: ${destination}`);
   }
 
   /**
    * Subscribe to read receipts
-   * @param {number} userId - Current user's ID
-   * @param {Function} onRead - Callback when message is read
+   * ✅ CRITICAL FIX: Subscribe to /user/queue/read WITHOUT email
    */
-  subscribeToReadReceipts(userId, onRead) {
+  subscribeToReadReceipts(userEmail, onRead) {
     if (!this.connected) {
       console.error('❌ WebSocket not connected');
       return;
     }
 
-    const destination = `/user/${userId}/queue/read`;
+    const destination = `/user/queue/read`;
+    
+    console.log('========================================');
+    console.log('📡 SUBSCRIBING TO READ RECEIPTS');
+    console.log('   User Email:', userEmail);
+    console.log('   Subscription Destination:', destination);
+    console.log('========================================');
     
     const subscription = this.client.subscribe(destination, (message) => {
+      console.log('========================================');
+      console.log('✅ READ RECEIPT RECEIVED');
+      console.log('   Destination:', message.headers.destination);
+      console.log('========================================');
+      
       try {
         const data = JSON.parse(message.body);
-        console.log('✅ Message read:', data);
+        console.log('✅ Parsed read receipt:', data);
         onRead(data);
       } catch (error) {
-        console.error('Error parsing read receipt:', error);
+        console.error('❌ Error parsing read receipt:', error);
       }
     });
 
@@ -132,8 +155,6 @@ class WebSocketService {
 
   /**
    * Send a chat message
-   * @param {number} receiverId 
-   * @param {string} content 
    */
   sendMessage(receiverId, content) {
     if (!this.connected) {
@@ -146,17 +167,22 @@ class WebSocketService {
       content,
     };
 
+    console.log('========================================');
+    console.log('📤 SENDING MESSAGE VIA WEBSOCKET');
+    console.log('   Destination: /app/chat.send');
+    console.log('   Payload:', payload);
+    console.log('========================================');
+
     this.client.publish({
       destination: '/app/chat.send',
       body: JSON.stringify(payload),
     });
 
-    console.log('📤 Message sent:', payload);
+    console.log('✅ Message sent to WebSocket server');
   }
 
   /**
    * Mark message as read
-   * @param {number} messageId 
    */
   markAsRead(messageId) {
     if (!this.connected) {
@@ -168,12 +194,18 @@ class WebSocketService {
       messageId,
     };
 
+    console.log('========================================');
+    console.log('📖 SENDING MARK AS READ');
+    console.log('   Destination: /app/chat.read');
+    console.log('   Message ID:', messageId);
+    console.log('========================================');
+
     this.client.publish({
       destination: '/app/chat.read',
       body: JSON.stringify(payload),
     });
 
-    console.log('✅ Marked as read:', messageId);
+    console.log('✅ Mark as read sent');
   }
 
   isConnected() {

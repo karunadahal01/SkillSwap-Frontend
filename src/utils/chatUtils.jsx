@@ -10,7 +10,7 @@ const getFullUrl = (path) => {
   }
   // Remove leading slash if present
   const cleanPath = path.startsWith('/') ? path.substring(1) : path;
-  const baseUrl = import.meta.env.VITE_API_URL || 'http://192.168.254.4:8080';
+  const baseUrl = import.meta.env.VITE_API_URL || 'http://192.168.1.75:8080';
   return `${baseUrl}/${cleanPath}`;
 };
 

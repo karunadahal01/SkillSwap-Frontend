@@ -1,4 +1,4 @@
-// src/context/ChatContext.jsx
+// src/context/ChatContext.jsx - EMAIL FIX VERSION
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import wsService from '@/config/websocket';
@@ -30,20 +30,27 @@ export const ChatProvider = ({ children }) => {
 
     const initWebSocket = async () => {
       try {
-        console.log('🔌 Connecting WebSocket for user:', user.id);
+        console.log('=== WEBSOCKET INIT START ===');
+        console.log('🔌 Connecting WebSocket for user:', user.email);  // ✅ Changed to email
+        console.log('   User ID:', user.id);
+        console.log('🔑 Token preview:', token.substring(0, 20) + '...');
+        
         await wsService.connect(token);
         setWsConnected(true);
         hasInitialized.current = true;
 
-        // Subscribe to messages
-        wsService.subscribeToMessages(user.id, handleIncomingMessage);
+        // ✅ CRITICAL: Subscribe using EMAIL instead of ID
+        wsService.subscribeToMessages(user.email, handleIncomingMessage);
         
         // Subscribe to read receipts
-        wsService.subscribeToReadReceipts(user.id, handleReadReceipt);
+        wsService.subscribeToReadReceipts(user.email, handleReadReceipt);
         
-        console.log('✅ WebSocket initialized for user:', user.id);
+        console.log('✅ WebSocket initialized successfully');
+        console.log('=== WEBSOCKET INIT END ===\n');
       } catch (error) {
-        console.error('❌ WebSocket connection failed:', error);
+        console.error('=== WEBSOCKET INIT FAILED ===');
+        console.error('❌ Error:', error);
+        console.error('=== END ERROR ===\n');
         setWsConnected(false);
       }
     };
@@ -62,101 +69,99 @@ export const ChatProvider = ({ children }) => {
 
   // Handle incoming WebSocket messages
   const handleIncomingMessage = useCallback((messageData) => {
-    console.log('📨 RAW WebSocket message received:', messageData);
+    console.log('\n=== INCOMING MESSAGE START ===');
+    console.log('📨 Raw WebSocket data:', JSON.stringify(messageData, null, 2));
     
     const { senderId, receiverId, messageId, content, createdAt, isRead, attachments } = messageData;
     
-    // Determine the other user's ID
     const otherUserId = senderId === user.id ? receiverId : senderId;
+    const isMyMessage = senderId === user.id;
 
-    console.log('📝 Processing message:', {
+    console.log('📝 Message details:', {
       messageId,
       senderId,
       receiverId,
       otherUserId,
-      isMyMessage: senderId === user.id,
+      isMyMessage,
       currentUserId: user.id,
-      hasAttachments: attachments && attachments.length > 0
+      hasAttachments: !!(attachments && attachments.length > 0)
     });
 
-    // ✅ Create message object with proper structure
     const newMessage = {
       messageId,
       senderId,
       receiverId,
-      content,
+      content: content || '',
       isRead,
       createdAt,
       type: (attachments && attachments.length > 0) ? 'file' : 'text',
-      sender: senderId === user.id ? 'me' : 'them',
+      sender: isMyMessage ? 'me' : 'them',
       attachments: attachments || [],
     };
 
     console.log('✅ Created message object:', newMessage);
 
-    // ✅ Update conversations - replace pending message or add new one
     setConversations((prev) => {
-      console.log('📂 Current conversations:', prev);
       const existing = prev[otherUserId] || [];
       
-      // ✅ CRITICAL FIX: Check if this is replacing a pending message
-      // Match by content and sender for text messages
-      // Match by attachments for file messages
-      const pendingIndex = existing.findIndex(msg => {
-        if (!msg._pending) return false;
+      const pendingMessages = existing.filter(m => m._pending);
+      console.log(`⏳ Found ${pendingMessages.length} pending messages`);
+      
+      let foundPending = false;
+      let replacedIndex = -1;
+      
+      const updated = existing.map((msg, index) => {
+        if (!msg._pending) return msg;
         
-        // For file messages, match by having attachments
-        if (attachments && attachments.length > 0) {
-          return msg.senderId === senderId && msg.files && msg.files.length > 0;
+        const contentMatch = msg.content === content;
+        const hasIncomingFiles = attachments && attachments.length > 0;
+        const hasPendingFiles = msg.attachments && msg.attachments.length > 0;
+        const fileMatch = hasIncomingFiles && hasPendingFiles;
+        const senderMatch = msg.senderId === senderId;
+        const receiverMatch = msg.receiverId === receiverId;
+        
+        if (!foundPending && senderMatch && receiverMatch && (contentMatch || fileMatch)) {
+          console.log(`✅ MATCH FOUND! Replacing pending message at index ${index}`);
+          foundPending = true;
+          replacedIndex = index;
+          return newMessage;
         }
         
-        // For text messages, match by content
-        return msg.senderId === senderId && msg.content === content;
+        return msg;
       });
       
-      if (pendingIndex !== -1) {
-        // Replace pending message with real one
-        console.log('🔄 Replacing pending message at index', pendingIndex, 'with real message');
-        const updated = [...existing];
-        updated[pendingIndex] = newMessage;
-        return {
-          ...prev,
-          [otherUserId]: updated,
-        };
+      if (foundPending) {
+        console.log(`🔄 Successfully replaced pending message`);
+      } else {
+        const alreadyExists = updated.some(msg => msg.messageId === messageId);
+        if (alreadyExists) {
+          console.log('⚠️ Message already exists, skipping');
+          return prev;
+        }
+        
+        console.log('➕ Adding new message');
+        updated.push(newMessage);
       }
       
-      // Check if message already exists (avoid duplicates)
-      const alreadyExists = existing.some(msg => msg.messageId === messageId);
-      if (alreadyExists) {
-        console.log('⚠️ Message already exists, skipping duplicate');
-        return prev;
-      }
-
-      console.log('✅ Adding new message to conversation with user:', otherUserId);
-      const updated = {
+      console.log('=== INCOMING MESSAGE END ===\n');
+      
+      return {
         ...prev,
-        [otherUserId]: [...existing, newMessage],
+        [otherUserId]: updated,
       };
-      console.log('📂 Updated conversations:', updated);
-      return updated;
     });
 
-    // ✅ Update chat users list (move to top, update last message)
+    // Update chat users list
     setChatUsers((prev) => {
       const others = prev.filter(u => u.userId !== otherUserId);
       const currentUser = prev.find(u => u.userId === otherUserId);
       
-      // Determine display text
-      let displayText = content;
+      let displayText = content || '';
       if (attachments && attachments.length > 0) {
         const mimeType = attachments[0].mimeType || '';
-        if (mimeType.startsWith('image/')) {
-          displayText = '📷 Photo';
-        } else if (mimeType.startsWith('video/')) {
-          displayText = '🎥 Video';
-        } else {
-          displayText = '📎 File';
-        }
+        if (mimeType.startsWith('image/')) displayText = '📷 Photo';
+        else if (mimeType.startsWith('video/')) displayText = '🎥 Video';
+        else displayText = '📎 File';
       }
       
       if (currentUser) {
@@ -165,8 +170,7 @@ export const ChatProvider = ({ children }) => {
             ...currentUser, 
             lastMessage: displayText, 
             lastMessageTime: createdAt,
-            // Increment unread count if message is from other user
-            unreadCount: senderId !== user.id ? (currentUser.unreadCount || 0) + 1 : currentUser.unreadCount
+            unreadCount: !isMyMessage ? (currentUser.unreadCount || 0) + 1 : currentUser.unreadCount
           },
           ...others,
         ];
@@ -175,33 +179,32 @@ export const ChatProvider = ({ children }) => {
       return prev;
     });
 
-    console.log('✅ Message processing complete');
   }, [user]);
 
   // Handle read receipts
   const handleReadReceipt = useCallback((messageData) => {
-    console.log('✅ Read receipt received:', messageData);
+    console.log('\n=== READ RECEIPT ===');
+    console.log('✅ Read receipt data:', messageData);
     
-    const { messageId, senderId, receiverId, isRead } = messageData;
-    
+    const { messageId, senderId, receiverId } = messageData;
     const otherUserId = senderId === user.id ? receiverId : senderId;
 
     setConversations((prev) => ({
       ...prev,
       [otherUserId]: (prev[otherUserId] || []).map((msg) =>
         msg.messageId === messageId ? { ...msg, isRead: true } : msg
-      ),
+      )
     }));
+    
+    console.log('=== READ RECEIPT END ===\n');
   }, [user]);
 
-  // Fetch chat users
   const fetchChatUsers = useCallback(async () => {
     setLoading(true);
     try {
       const response = await getChatUsers();
-      
       if (response.success && response.data) {
-        console.log('📋 Chat users fetched:', response.data);
+        console.log('📋 Chat users fetched:', response.data.length, 'users');
         setChatUsers(response.data);
       }
     } catch (error) {
@@ -211,8 +214,8 @@ export const ChatProvider = ({ children }) => {
     }
   }, []);
 
-  // Fetch conversation with a specific user
   const fetchConversation = useCallback(async (userId) => {
+    console.log(`\n=== FETCHING CONVERSATION with user ${userId} ===`);
     setLoading(true);
     try {
       const response = await getConversation(userId);
@@ -220,17 +223,18 @@ export const ChatProvider = ({ children }) => {
       if (response.success && response.data) {
         const messages = response.data.map((msg) => ({
           ...msg,
-          type: 'text',
+          type: (msg.attachments && msg.attachments.length > 0) ? 'file' : 'text',
           sender: msg.senderId === user.id ? 'me' : 'them',
         }));
         
-        console.log('💬 Conversation fetched for user', userId, ':', messages);
+        console.log(`💬 Loaded ${messages.length} messages from history`);
         
         setConversations((prev) => ({
           ...prev,
           [userId]: messages,
         }));
       }
+      console.log('=== FETCH CONVERSATION END ===\n');
     } catch (error) {
       console.error(`Error fetching conversation with user ${userId}:`, error);
     } finally {
@@ -238,24 +242,28 @@ export const ChatProvider = ({ children }) => {
     }
   }, [user]);
 
-  // Send message via WebSocket with optimistic update
   const sendMessage = useCallback(async (receiverId, content, files = []) => {
+    console.log('\n=== SENDING MESSAGE START ===');
+    console.log('📤 Send request:', {
+      receiverId,
+      content: content || '(empty)',
+      filesCount: files.length,
+      wsConnected
+    });
+    
     if (!wsConnected) {
-      console.error('⚠️ WebSocket not connected, cannot send message');
-      return;
+      console.error('❌ WebSocket not connected!');
+      throw new Error('Not connected to chat server');
     }
 
     try {
-      console.log('📤 Sending message via WebSocket:', { receiverId, content, files });
-      
-      // Determine message type and display text
       const hasFiles = files.length > 0;
       const messageType = hasFiles ? 'file' : 'text';
-      const displayContent = content || (hasFiles ? '📎 Attachment' : '');
+      const displayContent = content || '';
       
-      // ✅ Optimistically add message to UI immediately
+      const tempId = `temp-${Date.now()}-${Math.random()}`;
       const tempMessage = {
-        messageId: `temp-${Date.now()}`, // Temporary ID
+        messageId: tempId,
         senderId: user.id,
         receiverId,
         content: displayContent,
@@ -263,30 +271,40 @@ export const ChatProvider = ({ children }) => {
         createdAt: new Date().toISOString(),
         type: messageType,
         sender: 'me',
-        _pending: true, // Mark as pending
-        files: hasFiles ? files.map(f => ({
+        _pending: true,
+        attachments: hasFiles ? files.map(f => ({
           fileName: f.name,
-          fileURL: f.objectURL,
+          fileUrl: f.objectURL,
           mimeType: f.type,
-        })) : undefined,
+        })) : [],
       };
 
-      // Add to conversations immediately
+      console.log('✨ Created optimistic message');
+
       setConversations((prev) => ({
         ...prev,
         [receiverId]: [...(prev[receiverId] || []), tempMessage],
       }));
+      console.log('✅ Optimistic message added to UI');
 
       // Update chat users list
       setChatUsers((prev) => {
         const others = prev.filter(u => u.userId !== receiverId);
         const currentUser = prev.find(u => u.userId === receiverId);
         
+        let displayText = displayContent;
+        if (hasFiles) {
+          const mimeType = files[0].type || '';
+          if (mimeType.startsWith('image/')) displayText = '📷 Photo';
+          else if (mimeType.startsWith('video/')) displayText = '🎥 Video';
+          else displayText = '📎 File';
+        }
+        
         if (currentUser) {
           return [
             { 
               ...currentUser, 
-              lastMessage: displayContent, 
+              lastMessage: displayText, 
               lastMessageTime: tempMessage.createdAt,
             },
             ...others,
@@ -296,41 +314,43 @@ export const ChatProvider = ({ children }) => {
         return prev;
       });
 
-      // ✅ Send via REST API if files are attached, otherwise use WebSocket
       if (hasFiles) {
-        // Use REST API for file uploads
+        console.log('📤 Sending via REST API (files)...');
         const { sendMessageWithFiles } = await import('@/services/user/chatService');
         const response = await sendMessageWithFiles(receiverId, content, files);
         
         if (response.success) {
-          console.log('✅ Message with files sent via REST API:', response.data);
-          
-          // ✅ The real message will come back via WebSocket
-          // For now, just log success - WebSocket will handle UI update
+          console.log('✅ REST API send successful');
+          console.log('⏳ Waiting for WebSocket broadcast...');
+        } else {
+          throw new Error('Failed to send files');
         }
       } else {
-        // Use WebSocket for text-only messages
+        console.log('📤 Sending via WebSocket (text)...');
         wsService.sendMessage(receiverId, content);
-        console.log('✅ Message sent to WebSocket');
+        console.log('✅ WebSocket send successful');
+        console.log('⏳ Waiting for WebSocket broadcast...');
       }
       
-    } catch (error) {
-      console.error('❌ Error sending message via WebSocket:', error);
+      console.log('=== SENDING MESSAGE END (WAITING FOR RESPONSE) ===\n');
       
-      // Remove the optimistic message on error
+    } catch (error) {
+      console.error('=== SENDING MESSAGE FAILED ===');
+      console.error('❌ Error:', error);
+      
       setConversations((prev) => ({
         ...prev,
         [receiverId]: (prev[receiverId] || []).filter(msg => !msg._pending),
       }));
       
+      console.log('🗑️ Removed optimistic message');
       throw error;
     }
   }, [wsConnected, user]);
 
-  // Mark message as read
   const markAsRead = useCallback((messageId) => {
     if (!wsConnected) {
-      console.warn('⚠️ WebSocket not connected');
+      console.warn('⚠️ Cannot mark as read - WebSocket not connected');
       return;
     }
 
