@@ -8,8 +8,7 @@ import {
   alpha,
 } from "@mui/material";
 import NotificationMenu from "@components/admin/NotificationMenu";
-import AvatarMenu from "@components/user/AvatarMenu";
-import ThemeToggle from "@components/admin/ThemeToggle";
+import AvatarMenu from "@components/admin/AvatarMenu";
 import Logo from "@assets/skillswap-logo.png";
 import { useNavigate } from "react-router-dom";
 
