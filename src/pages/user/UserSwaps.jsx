@@ -853,7 +853,7 @@ export default function UserSwaps() {
                   page={page}
                   onChange={(_, v) => setPage(v)}
                   color="primary"
-                  size={{ xs: "medium", sm: "large" }}
+                  size="large"
                   sx={{
                     '& .MuiPaginationItem-root': {
                       borderRadius: 2,
