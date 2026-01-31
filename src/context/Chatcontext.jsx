@@ -1,4 +1,4 @@
-// src/context/ChatContext.jsx - EMAIL FIX VERSION
+// src/context/ChatContext.jsx
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react';
 import { useAuth } from './AuthContext';
 import wsService from '@/config/websocket';
@@ -31,18 +31,15 @@ export const ChatProvider = ({ children }) => {
     const initWebSocket = async () => {
       try {
         console.log('=== WEBSOCKET INIT START ===');
-        console.log('🔌 Connecting WebSocket for user:', user.email);  // ✅ Changed to email
+        console.log('🔌 Connecting WebSocket for user:', user.email);
         console.log('   User ID:', user.id);
-        console.log('🔑 Token preview:', token.substring(0, 20) + '...');
         
         await wsService.connect(token);
         setWsConnected(true);
         hasInitialized.current = true;
 
-        // ✅ CRITICAL: Subscribe using EMAIL instead of ID
+        // ✅ Subscribe using EMAIL
         wsService.subscribeToMessages(user.email, handleIncomingMessage);
-        
-        // Subscribe to read receipts
         wsService.subscribeToReadReceipts(user.email, handleReadReceipt);
         
         console.log('✅ WebSocket initialized successfully');
@@ -50,7 +47,6 @@ export const ChatProvider = ({ children }) => {
       } catch (error) {
         console.error('=== WEBSOCKET INIT FAILED ===');
         console.error('❌ Error:', error);
-        console.error('=== END ERROR ===\n');
         setWsConnected(false);
       }
     };
@@ -72,7 +68,7 @@ export const ChatProvider = ({ children }) => {
     console.log('\n=== INCOMING MESSAGE START ===');
     console.log('📨 Raw WebSocket data:', JSON.stringify(messageData, null, 2));
     
-    const { senderId, receiverId, messageId, content, createdAt, isRead, attachments } = messageData;
+    const { senderId, receiverId, messageId, content, createdAt, isRead, attachments, reaction } = messageData;
     
     const otherUserId = senderId === user.id ? receiverId : senderId;
     const isMyMessage = senderId === user.id;
@@ -83,8 +79,8 @@ export const ChatProvider = ({ children }) => {
       receiverId,
       otherUserId,
       isMyMessage,
-      currentUserId: user.id,
-      hasAttachments: !!(attachments && attachments.length > 0)
+      hasReaction: !!reaction,
+      reaction
     });
 
     const newMessage = {
@@ -97,6 +93,7 @@ export const ChatProvider = ({ children }) => {
       type: (attachments && attachments.length > 0) ? 'file' : 'text',
       sender: isMyMessage ? 'me' : 'them',
       attachments: attachments || [],
+      reaction: reaction || null,  // ✅ Include reaction
     };
 
     console.log('✅ Created message object:', newMessage);
@@ -104,13 +101,32 @@ export const ChatProvider = ({ children }) => {
     setConversations((prev) => {
       const existing = prev[otherUserId] || [];
       
+      // ✅ CRITICAL FIX: Check if this is an UPDATE to an existing message
+      const existingMessageIndex = existing.findIndex(msg => msg.messageId === messageId);
+      
+      if (existingMessageIndex !== -1) {
+        // ✅ Message exists - UPDATE it (for reactions, read receipts, etc.)
+        console.log(`🔄 Updating existing message ${messageId} (e.g., reaction change)`);
+        const updated = [...existing];
+        updated[existingMessageIndex] = {
+          ...updated[existingMessageIndex],
+          ...newMessage,  // Merge new data (reaction, isRead, etc.)
+        };
+        
+        console.log('=== INCOMING MESSAGE END (UPDATED) ===\n');
+        return {
+          ...prev,
+          [otherUserId]: updated,
+        };
+      }
+      
+      // ✅ New message - check for pending messages to replace
       const pendingMessages = existing.filter(m => m._pending);
       console.log(`⏳ Found ${pendingMessages.length} pending messages`);
       
       let foundPending = false;
-      let replacedIndex = -1;
       
-      const updated = existing.map((msg, index) => {
+      const updated = existing.map((msg) => {
         if (!msg._pending) return msg;
         
         const contentMatch = msg.content === content;
@@ -121,24 +137,15 @@ export const ChatProvider = ({ children }) => {
         const receiverMatch = msg.receiverId === receiverId;
         
         if (!foundPending && senderMatch && receiverMatch && (contentMatch || fileMatch)) {
-          console.log(`✅ MATCH FOUND! Replacing pending message at index ${index}`);
+          console.log(`✅ MATCH FOUND! Replacing pending message`);
           foundPending = true;
-          replacedIndex = index;
           return newMessage;
         }
         
         return msg;
       });
       
-      if (foundPending) {
-        console.log(`🔄 Successfully replaced pending message`);
-      } else {
-        const alreadyExists = updated.some(msg => msg.messageId === messageId);
-        if (alreadyExists) {
-          console.log('⚠️ Message already exists, skipping');
-          return prev;
-        }
-        
+      if (!foundPending) {
         console.log('➕ Adding new message');
         updated.push(newMessage);
       }
@@ -287,7 +294,6 @@ export const ChatProvider = ({ children }) => {
       }));
       console.log('✅ Optimistic message added to UI');
 
-      // Update chat users list
       setChatUsers((prev) => {
         const others = prev.filter(u => u.userId !== receiverId);
         const currentUser = prev.find(u => u.userId === receiverId);
@@ -321,7 +327,6 @@ export const ChatProvider = ({ children }) => {
         
         if (response.success) {
           console.log('✅ REST API send successful');
-          console.log('⏳ Waiting for WebSocket broadcast...');
         } else {
           throw new Error('Failed to send files');
         }
@@ -329,10 +334,9 @@ export const ChatProvider = ({ children }) => {
         console.log('📤 Sending via WebSocket (text)...');
         wsService.sendMessage(receiverId, content);
         console.log('✅ WebSocket send successful');
-        console.log('⏳ Waiting for WebSocket broadcast...');
       }
       
-      console.log('=== SENDING MESSAGE END (WAITING FOR RESPONSE) ===\n');
+      console.log('=== SENDING MESSAGE END ===\n');
       
     } catch (error) {
       console.error('=== SENDING MESSAGE FAILED ===');
